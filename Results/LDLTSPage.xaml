@@ -1,0 +1,264 @@
+﻿<Page x:Class="Results.LDLTSPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Results"
+      xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+      MinHeight="400" MinWidth="800"
+      mc:Ignorable="d" >
+
+    <Grid  Margin="5,5,5,5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid Margin="0,5,0,0" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <WrapPanel Grid.Row="0" Grid.Column="0"  Orientation="Horizontal" HorizontalAlignment="Left" Height="Auto">
+                <ComboBox Name="LDLTSPlotOption" Width="150"  SelectedIndex="0" SelectionChanged="LDLTSPlotOption_SelectionChanged" >
+                    <ComboBoxItem Content="Plot C(t)" />
+                    <ComboBoxItem Content="Plot LDLTS Y" />
+                    <ComboBoxItem Content="Plot LDLTS NormXY" />
+                    <ComboBoxItem Content="Plot Arrhenius" />
+                </ComboBox>
+                <ComboBox Name="SplitOptionComboBox" Width="150" SelectedIndex="0" SelectionChanged="LDLTSDataFilesListBox_SelectionChanged">
+                    <ComboBoxItem Content="Split Verticaly" />
+                    <ComboBoxItem Content="Align Verticaly" />
+                    <ComboBoxItem Content="As measured" />
+                </ComboBox>
+                <Button Content="Refresh" Click="Button_Click" MinWidth="100"/>
+                <ToggleButton Name="DataToolTipToggleButton" IsChecked="True" MinWidth="100" Content="Data tool tip" Click="DataToolTipToggleButton_Click" />
+                <Button Content="Save picture" Name="ScreenCaptureButton" MinWidth="100" Click="ScreenCaptureButton_Click" />
+            </WrapPanel>
+            <Grid Name="ForGraphSave"  Grid.Row="1" Grid.Column="0" >
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <lvc:CartesianChart Grid.Column="0" Grid.Row="0" Name="LDLTSPlotGraf" Series="{Binding LDLTSPlotCollection}"  LegendLocation="Right" >
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis Title="Capacitance (pF)" ></lvc:Axis>
+                    </lvc:CartesianChart.AxisY>
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Title="Time (s)"  ></lvc:Axis>
+                    </lvc:CartesianChart.AxisX>
+                </lvc:CartesianChart>
+            </Grid>
+            <WrapPanel Grid.Row="2" Name="CtOption" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" >
+                <Label Content="X from " />
+                <TextBox Name="AxisXStartTextBox" Text="{Binding AxisXStart, Mode=TwoWay}" MinWidth="100" Margin="2,2,2,2"  />
+                <Label Content=" to " />
+                <ComboBox Name="AxisXEndComboBox"  IsEditable="True" Width="100" Margin="2,2,2,2" SelectedIndex="0" TextBoxBase.TextChanged="AxisXEndComboBox_TextChanged">
+                    <ComboBoxItem Content="end" />
+                </ComboBox> 
+                <ComboBox Name="LDLTSScaleTypeComboBox" SelectedIndex="0" Margin="2,2,2,2" SelectionChanged="LDLTSPlotOption_SelectionChanged">
+                    <ComboBoxItem Content="seconds" />
+                    <ComboBoxItem Content="samples" />
+                </ComboBox>
+                <Label Content="Points " />
+                <TextBox Name="ScalePointsTextBox" Text="{Binding AxisXPoints, Mode=TwoWay}" MinWidth="50" Margin="2,2,2,2" />
+                
+                <!--     <Label Name="EmmisionUnit" Content="1/s" Visibility="Collapsed" /> -->
+            </WrapPanel>
+        </Grid> 
+        
+        <TabControl Grid.Column="1">
+            <TabItem Header="LDLTS data" >
+                <Grid Margin="5,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+
+                    <Button Name="LoadButton" Content="Load" Grid.Column="0" Margin="2,2,2,2"  Grid.Row="0"  Height="20" VerticalAlignment="Bottom" Click="LoadLDLTSFile_Click" />
+                    <Button Name="SortLDLTSFiles" Content="Sort" Grid.Column="1" Margin="2,2,2,2" Grid.Row="0" Click="SortLDLTSFiles_Click" />
+                    <Button Content="Remove" Grid.Column="2" Grid.Row="0" Margin="2,2,2,2" Click="Remove_Click" />
+                    <ListBox x:Name="LDLTSDataFilesListBox" HorizontalContentAlignment="Stretch"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding LDLTSDataFiles}" Margin="2,2,2,2" SelectionMode="Multiple" SelectionChanged="LDLTSDataFilesListBox_SelectionChanged" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate >
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="8*"/>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <Label Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Content="{Binding FileNameShort}" />
+                                    
+                                    <TextBox Grid.Column="1" HorizontalAlignment="Right" MinWidth="50" Text="{Binding Temperature}"/>
+                                    <Label Grid.Column="2" Content="K" />
+                                    <ComboBox Grid.Column="3" ItemsSource="{Binding NumericalMethods}" MinWidth="100" SelectedIndex="{Binding SelectedNumericalMethodIndex}" >
+                                        <ComboBox.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Name="SameNumericalMethodContexMenu" Header="Set same numerical method for all" Click="SameNumericalMethodContexMenu_Click" />
+                                            </ContextMenu>
+                                        </ComboBox.ContextMenu>
+                                    </ComboBox>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Content="Select all" Grid.Column="0" Margin="2,2,2,2" Grid.ColumnSpan="2" Grid.Row="2" Click="SelectAll_Click"  />
+                    <Button Content="Deselect all" Grid.Column="2" Margin="2,2,2,2" Grid.Row="2" Click="Deselectall_Click" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Select Peaks" >
+                <Grid  Margin="5,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <ComboBox Name="LDLTSFileComboBox" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="2,0,0,0" SelectionChanged="LDLTSFileComboBox_SelectionChanged"/>
+                    <Button Name="NextLDLTSFileButton" Grid.Row="0" Grid.Column="2"  Content="▼"  Margin="2,2,2,2" Click="NextLDLTSFileButton_Click"/>
+                    <ListBox x:Name="PeaksListBox" SelectionMode="Single" HorizontalContentAlignment="Stretch" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="2,2,2,2" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid> 
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0" Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Grid.Row="0" Background="{Binding Color}" Content="{Binding Path=EmRate}" ContentStringFormat="e  [1/s]={0:0.##E+00} ± " Padding="3,3,0,3" Margin="0,0,0,0" />
+                                        <Label Grid.Column="1" Grid.Row="0" Background="{Binding Color}" Content="{Binding Path=EmRateError}" ContentStringFormat="{}{0:0.##E+00}" Padding="0,3,3,3" Margin="0,0,0,0"/>
+                                    </Grid>
+                                    <Grid Grid.Column="0" Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Grid.Row="0" Background="{Binding Color}" Content="{Binding Path=Amplitude}" ContentStringFormat="ΔC [pF]={0:0.##E+00} ± " Padding="3,3,0,3" Margin="0,0,0,0" />
+                                        <Label Grid.Column="1" Grid.Row="0" Background="{Binding Color}" Content="{Binding Path=AmplitudeError}" ContentStringFormat="{}{0:0.##E+00}" Padding="0,3,3,3" Margin="0,0,0,0" />
+                                    </Grid>
+                                    <Label Grid.Row="2" Grid.Column="0" Background="{Binding Color}" Content="{Binding Path=Broadening}" ContentStringFormat="Broadening: {0:0.##E+00}" Padding="3,3,3,3" Margin="0,0,0,0" />
+                                    <Grid Grid.Column="1" Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <ComboBox Grid.Column="0" IsEditable="True" Foreground="{Binding ColorName}" Name="DefectNamesComboBox" Text="{Binding DefectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Path=Defects, Mode=TwoWay, NotifyOnSourceUpdated=True}"  IsTextSearchEnabled="True" SelectionChanged="DefectNamesComboBox_SelectionChanged" />
+                                        <Button  Grid.Column="1" Content=" + "  Name="AddDefect" Click="AddDefect_Click" />
+                                    </Grid>
+                                    
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="E,σ results" >
+                <Grid Margin="5,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Button Name="GetResult" Content="Get E,σ" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="2,2,2,2" Click="GetResult_Click"/>
+                    <ListBox Name="DefectsResultsListbox" Margin="2,2,2,2" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <Label Name="DefectName" ContentStringFormat="Name: {0}" Content="{Binding DefectName}" Grid.Column="0" Grid.Row="0" Padding="4,4,4,4" Margin="0,0,0,0"/>
+                                    <WrapPanel Grid.Column="0" Grid.Row="1">
+                                        <Label Name="DefectEnergy" Content="{Binding Energy}" ContentStringFormat="E = {0:0.##E+00} ± " Padding="4,4,0,4" Margin="0,0,0,0"/>
+                                        <Label Name="DefectEnergyDeviation" Content="{Binding EnergyDeviation}" ContentStringFormat="{}{0:0.##E+00} eV" Padding="0,4,4,4" Margin="0,0,0,0" />
+                                    </WrapPanel>
+                                    <WrapPanel Grid.Column="0" Grid.Row="2">
+                                        <Label Name="CrossSection" Content="{Binding CrossSection}" ContentStringFormat="σ = {0:0.##E+00} cm^2" Padding="4,4,4,4" Margin="0,0,0,0"/>
+                               <!--         <Label Name="CrossSectionDeviation" Content="{Binding CrossSectionDeviation}" ContentStringFormat="{}}{0:0.##E+00} cm^2" Padding="0,4,4,4" Margin="0,0,0,0" /> -->
+                                    </WrapPanel>
+
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Content="Save"  Grid.Column="2" Grid.Row="0" Margin="2,2,2,2" Click="Save_Click"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Save data">
+                <Grid  Margin="5,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Button Name="AddHeaderButton" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Content="Add" Margin="2,2,2,2" Click="AddHeaderButton_Click"/>
+                    <Button Name="RemoveHeaderButton" Grid.Row="0" Grid.Column="2"  Content="Remove"  Margin="2,2,2,2" Click="RemoveHeaderButton_Click" />
+                    <ListBox x:Name="DefectSaveHeadersListBox" SelectionMode="Multiple" HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding HeadersForSaveDataList}" Grid.Column="0" Grid.ColumnSpan="3" Margin="2,2,2,2" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Name="number" Grid.Column="0" Grid.Row="0" ContentStringFormat="{}{0:N0}. column" Content="{Binding index}" />
+                                    <ComboBox Name="Properties" Grid.Column="0" ItemsSource="{Binding properties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  SelectedIndex="{Binding selectedPropertiesIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Grid.Row="1" Margin="2,2,2,2" SelectionChanged="Properties_SelectionChanged"/>
+                                    <ComboBox Name="keys" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding keys, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding selectedKeysIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,2,2"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Name="SaveDefectProperies" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" Content="Save" Margin="2,2,2,2" Click="SaveDefectProperies_Click" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Page>
