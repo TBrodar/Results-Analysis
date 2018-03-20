@@ -1,0 +1,297 @@
+﻿<Window x:Class="Results.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Results"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        mc:Ignorable="d"
+        Closed="Window_Closed"
+        Title="Results" Height="600" Width="1200">
+    <Window.Resources>
+        <CollectionViewSource x:Key="ItemCollectionViewSource"  CollectionViewType="ListCollectionView"/>
+      
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions> 
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TabControl Margin="0,5,0,0" Grid.Row="0">
+            <TabItem  Header="LDLTS ➡ E,σ">
+                <Frame Source="LDLTSPage.xaml" NavigationUIVisibility="Hidden" />
+                <!--       <Grid  Margin="5,5,5,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Margin="0,5,0,0" Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions> 
+                        
+                        <WrapPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <ComboBox Name="LDLTSPlotOption" Width="100"  SelectedIndex="0" Margin="0,0,2,0" >
+                                <ComboBoxItem Content="Plot C(t)" />
+                                <ComboBoxItem Content="Plot LDLTS Y" />
+                                <ComboBoxItem Content="Plot LDLTS NormXY" />
+                            </ComboBox>
+                            <ToggleButton Content="Split" Width="100" Margin="2,2,2,2" />
+                            <Label Content="Range (" />
+                            <TextBox Width="50" />
+                            <Label Content=" - " />
+                            <TextBox Width="50" />
+                            <Label Content=" )"/>
+                            <ComboBox Name="LDLTSNumericalMethodPlotOption"  SelectedIndex="0" Margin="0,0,2,0">
+                                <ComboBoxItem Content="All" />
+                                <ComboBoxItem Content="Contig" />
+                                <ComboBoxItem Content="Ftikreg" />
+                                <ComboBoxItem Content="Flog" />
+                            </ComboBox>
+                        </WrapPanel>
+                        
+                        <lvc:CartesianChart Name="LDLTSPlotGraf" Series="{Binding LDLTSPlotCollection}" LegendLocation="Right" Grid.Row="1"  >
+                            <lvc:CartesianChart.AxisY>
+                                <lvc:Axis Title="Capacitance (pF)" ></lvc:Axis>
+                            </lvc:CartesianChart.AxisY>
+                            <lvc:CartesianChart.AxisX>
+                                <lvc:Axis Title="Sample"  ></lvc:Axis>
+                            </lvc:CartesianChart.AxisX>
+                        </lvc:CartesianChart>
+                    </Grid>
+
+                    <TabControl Grid.Column="1">
+                        <TabItem Header="LDLTS data" >
+                            <Grid Margin="5,5,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.Resources>
+                                    <local:LDLTSDataFiles x:Key="ldltsdatafiles" />
+                                </Grid.Resources>
+                                
+                                
+                                <Button Content="Load" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"  Height="20" VerticalAlignment="Bottom" Click="" />
+                                <Button Content="Remove" Grid.Column="2" Grid.Row="0" />
+                                <ListBox x:Name="LDLTSDataFilesListBox"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{StaticResource ldltsdatafiles}" Margin="0,5,0,5" SelectionMode="Multiple" >
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid >
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Label Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding FileNameShort}" />
+                                                <TextBox Grid.Column="2" Text="{Binding Temperature}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <Button Content="Select all" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" />
+                                <Button Content="Deselect all" Grid.Column="2" Grid.Row="2" />
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="Select Peaks" >
+                            
+                        </TabItem>
+                        <TabItem Header="E,σ results" >
+                            
+                        </TabItem>
+                    </TabControl>
+                </Grid> -->
+            </TabItem> 
+            <TabItem Header="C-V ➡ N-W">
+                <Grid  Margin="5,5,5,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Margin="0,5,0,0" Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <WrapPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">  
+                        <ComboBox Name="CVPlotOption"   Width="100" SelectionChanged="CVPlotOption_SelectionChanged">
+                            <ComboBoxItem Content="Plot C-V" />
+                            <ComboBoxItem Content="Plot 1/C^2-V" />
+                            <ComboBoxItem Content="Plot N-W" />
+                        </ComboBox>
+                        </WrapPanel>
+                        <lvc:CartesianChart Name="CVPlotGraf" Series="{Binding CVPlotCollection}" LegendLocation="Right" Grid.Row="1" >
+                            <lvc:CartesianChart.AxisY>
+                                <lvc:Axis Title="Capacitance (pF)" ></lvc:Axis>
+                            </lvc:CartesianChart.AxisY>
+                            <lvc:CartesianChart.AxisX>
+                                <lvc:Axis Title="Voltage (V)"  ></lvc:Axis>
+                            </lvc:CartesianChart.AxisX>
+                        </lvc:CartesianChart>
+                    </Grid>
+                    
+                    <TabControl Grid.Column="1">
+                        <TabItem Header="C-V data">
+                            <Grid Margin="5,5,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="1*" />
+                                    <RowDefinition Height="2*" />
+                                </Grid.RowDefinitions>
+                                <Button Content="Load" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Click="LoadCVFile" Height="20" VerticalAlignment="Bottom" />
+                                <Button Content="Remove" Grid.Column="2" Grid.Row="0" Click="RemoveCVFile_Click"/>
+                                <ListBox x:Name="DataFiles"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,5,0,0"  SelectionChanged="DataFiles_SelectionChanged" SelectionMode="Multiple" >
+
+                                </ListBox>
+                                <DataGrid x:Name="FileContent" DataContext="{StaticResource ItemCollectionViewSource}" SelectionUnit="Cell" ItemsSource="{Binding}" IsReadOnly="True" AutoGenerateColumns="False" PreviewMouseUp="DataGrid_PreviewMouseLeftButtonUp"  Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Margin="0,5,0,0">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Binding="{Binding Path=XData}" Header="Voltage (V)" Width="*"/>
+                                        <DataGridTextColumn Binding="{Binding Path=YData}" Header="Capacitance (pF)" Width="*" />
+                                        <DataGridTextColumn Binding="{Binding Path=Y2Data, StringFormat=E2}" Header="C^-2 (pF^-2)" Width="*" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="N-W result">
+                            <Grid Margin="5,5,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <ComboBox Name="CVFileNamesComboBox" SelectionChanged="CVFileNamesComboBox_SelectionChanged" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"></ComboBox>
+                                <Button Content="▼" Grid.Column="2" Grid.Row="0"  Margin="2,2,2,2" Click="NextCVFileButton_Click" />
+                                <Label Content="Alpha parameter :" Grid.Column="0" Grid.Row="1"/>
+                                <TextBox Name="AParameter" Grid.Column="1" Grid.Row="1" Margin="2,2,2,2"/>
+                                <ComboBox Name="ScaleComboBox" Grid.Column="2" Grid.Row="1" Margin="2,2,2,2" SelectedIndex="1" >
+                                    <ComboBoxItem Content="Small scale" />
+                                    <ComboBoxItem Content="Large scale" />
+                                </ComboBox>
+                                <Label Content="Max iterations :" Grid.Column="0" Grid.Row="2" />
+                                <TextBox Name="MaxIterationsTextBox" Grid.Column="1" Grid.Row="2"  Margin="2,2,2,2"  />
+                                <Label Content="Zero parameter :" Grid.Column="0" Grid.Row="3" />
+                                <TextBox Name="ZeroParameterTextBox" Grid.Column="1" Grid.Row="3"  Margin="2,2,2,2"/>
+                                <Label Content="Voltage step :" Grid.Column="0" Grid.Row="4" />
+                                <TextBox Name="VoltageStepTextBox" Grid.Column="1" Grid.Row="4"  Margin="2,2,2,2"  />
+                                <ComboBox Name="SmoothWCheckBox"  Grid.Column="0" Grid.Row="6" Margin="2,2,2,2" SelectionChanged="SmoothWCheckBox_SelectionChanged" SelectedIndex="0" >
+                                    <ComboBoxItem Content="W(C(N))"/>
+                                    <ComboBoxItem Content="W(smooth C)"/>
+                                    <ComboBoxItem Content="W(C)"/>
+                                </ComboBox>
+                                <ComboBox Name="CNWOptionComboBox" Grid.Column="0" Grid.Row="5" Margin="2,2,2,2" SelectedIndex="0">
+                                    <ComboBoxItem Content="C(N(First)) = C(First)" />
+                                    <ComboBoxItem Content="C(N(Last)) = C(Last)" />
+                                    <ComboBoxItem Content="MMSE C(V)-C(N(V)" />
+                                </ComboBox>
+                         <!--      <CheckBox Name="PlotNWCheckBox" Content="Plot N-W" IsChecked="False" Grid.Column="0" Grid.Row="6" Margin="2,8,2,2" Checked="PlotNWCheckBox_Checked"  /> -->
+                                <Label Content="Window points :"  Grid.Column="1" Grid.Row="5"  Margin="2,2,2,2" />
+                                <TextBox Name="SmoothWWindowPointsTextBox" Grid.Column="2" Grid.Row="5" Margin="2,2,2,2" IsEnabled="False" />
+                                <Label Content="Polynom order :"  Grid.Column="1" Grid.Row="6"  Margin="2,2,2,2" />
+                                <TextBox Name="PolynomOrder" Grid.Column="2" Grid.Row="6" Margin="2,2,2,2" IsEnabled="False"   />
+                                <Button Content="Get N-W" Click="Get_NW_Click" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" Margin="2,2,2,2" />
+                                <Button Name="NWResultsRemove" Content="Remove" Grid.Column="2"  Grid.Row="7" Margin="2,2,2,2" Click="NWResultsRemove_Click" />
+                                <ListBox Name="NWResults"  Grid.Column="0" SelectionMode="Multiple"  Grid.ColumnSpan="3" Grid.Row="8" Margin="2,2,2,2" SelectionChanged="NWResults_SelectionChanged"  />
+                                <Button Content="Save" Name="CVNWSaveButton" Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="3" Margin="2,2,2,2" Click="CVNWSaveButton_Click" />
+                                <CheckBox Name="SaveInputCVFileCheckbox" Content="Input C-V file"  Grid.Column="0" Grid.Row="10" IsChecked="True" /> 
+                                <CheckBox Name="SaveOutputNWFileCheckbox"  Content="Output N-W file" Grid.Column="1" Grid.Row="10" IsChecked="True" />
+                                <CheckBox Name="SaveOutputCVFileCheckbox" Content="Output C-V file" Grid.Column="2" Grid.Row="10" IsChecked="True" />
+                            </Grid>
+                        </TabItem>
+
+                    </TabControl>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Settings">
+                <TabControl TabStripPlacement="Left"  >
+                    <TabItem Header="Material" >
+                        <Grid Margin="10,10,10,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            
+                            <Label Content="Material Name :" Grid.Column="0" Grid.Row="0" />
+                            <TextBox Name="SettingsMaterialMaterialNameTextBox" Grid.Column="1" Grid.Row="0" Margin="2,2,2,2" Text="{Binding MaterialName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Label Content="Relative permittivity :" Grid.Column="0" Grid.Row="1" />
+                            <TextBox Name="SettingsMaterialRelativePermittivityTextBox" Grid.Column="1" Grid.Row="1" Margin="2,2,2,2" Text="{Binding RelativePermitivity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Label Content="Area :" Grid.Column="0" Grid.Row="2" />
+                            <TextBox Name="SettingsMaterialAreaTextBox" Grid.Column="1" Grid.Row="2" Margin="2,2,2,2" Text="{Binding Area, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            
+                        </Grid>
+                        
+                        
+                    </TabItem>
+                    <TabItem Header="Python" >
+                        <Grid Margin="10,10,10,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="100" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Label Content="Python console path :" Grid.Column="0" Grid.Row="0" />
+                            <TextBox Name="SettingsPythonPythonConsoleTextBox" Margin="2,2,2,2"  Grid.Column="1" Grid.Row="0" Text="{Binding PythonPath,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button Name="SettingsPythonPythonConsoleButton"  Content="Set Path" Margin="2,2,2,2" Grid.Column="2" Grid.Row="0" Click="SettingsPythonPythonConsoleButton_Click" />
+
+                            <Label Content="Python code path :" Grid.Column="0" Grid.Row="1" />
+                            <TextBox Name="SettingsPythonPythonCodeTextBox" Margin="2,2,2,2"  Grid.Column="1" Grid.Row="1" Text="{Binding PythonCodePath,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button Name="SettingsPythonPythonCodeButton"  Content="Set Path" Margin="2,2,2,2" Grid.Column="2" Grid.Row="1" Click="SettingsPythonPythonCodeButton_Click" />
+                            
+                            <Label Content="Python console code path :" Grid.Column="0" Grid.Row="2" />
+                            <TextBox Name="SettingsPythonPythonConsoleCodeTextBox" Margin="2,2,2,2"  Grid.Column="1" Grid.Row="2" Text="{Binding PythonCallPath,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button Name="SettingsPythonPythonConsoleCodeButton"  Content="Set Path" Margin="2,2,2,2" Grid.Column="2" Grid.Row="2" Click="SettingsPythonPythonConsoleCodeButton_Click" />
+                        </Grid>
+                        
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <!--     <TabItem Header="DLTS"></TabItem> 
+            <TabItem Header="LDLTS"></TabItem> -->
+        </TabControl>
+        <StatusBar DockPanel.Dock="Bottom" Grid.Row="1">
+            <StatusBarItem>
+                <TextBlock Name="Status" Text="---"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>
