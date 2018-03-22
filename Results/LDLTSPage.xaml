@@ -7,7 +7,9 @@
       xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
       MinHeight="400" MinWidth="800"
       mc:Ignorable="d" >
-
+    <Page.Resources>
+        <local:LDLTSDataFile x:Key="LDLTSDataFileClassResource" />
+    </Page.Resources>
     <Grid  Margin="5,5,5,5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
@@ -31,10 +33,27 @@
                     <ComboBoxItem Content="Split Verticaly" />
                     <ComboBoxItem Content="Align Verticaly" />
                     <ComboBoxItem Content="As measured" />
+                    <ComboBoxItem >
+                        <ComboBoxItem.Content>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Label Content="Split by offset " Grid.Column="0" />
+                                <TextBox Name="SplitByOffsetTextBox" Grid.Column="1" Text="{Binding Path=SplitByOffsetValue, 
+                  Source={StaticResource LDLTSDataFileClassResource},  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinWidth="50" Margin="2,2,2,2" />
+                            </Grid>
+                        </ComboBoxItem.Content>
+                    </ComboBoxItem>
                 </ComboBox>
                 <Button Content="Refresh" Click="Button_Click" MinWidth="100"/>
                 <ToggleButton Name="DataToolTipToggleButton" IsChecked="True" MinWidth="100" Content="Data tool tip" Click="DataToolTipToggleButton_Click" />
-                <Button Content="Save picture" Name="ScreenCaptureButton" MinWidth="100" Click="ScreenCaptureButton_Click" />
+                <Button Content="Save spectra" Name="ScreenCaptureButton" MinWidth="100" Click="ScreenCaptureButton_Click" />
             </WrapPanel>
             <Grid Name="ForGraphSave"  Grid.Row="1" Grid.Column="0" >
                 <Grid.RowDefinitions >
@@ -231,13 +250,16 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <Button Name="AddHeaderButton" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Content="Add" Margin="2,2,2,2" Click="AddHeaderButton_Click"/>
+                    <ComboBox Name="SavedHeaderTemplatesComboBox" Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="2"  Margin="2,2,2,2" IsEditable="True" SelectionChanged="SavedHeaderTemplatesComboBox_SelectionChanged" />
                     <Button Name="RemoveHeaderButton" Grid.Row="0" Grid.Column="2"  Content="Remove"  Margin="2,2,2,2" Click="RemoveHeaderButton_Click" />
-                    <ListBox x:Name="DefectSaveHeadersListBox" SelectionMode="Multiple" HorizontalContentAlignment="Stretch" Grid.Row="1" ItemsSource="{Binding HeadersForSaveDataList}" Grid.Column="0" Grid.ColumnSpan="3" Margin="2,2,2,2" >
+                    <Button Name="RemoveHeaderTemplateListButton" Margin="2,2,2,2" Grid.Row="1" Grid.Column="2"   Content="Remove list" Click="RemoveHeaderTemplateListButton_Click"/>
+                    <ListBox x:Name="DefectSaveHeadersListBox" SelectionMode="Multiple" HorizontalContentAlignment="Stretch" Grid.Row="2" ItemsSource="{Binding HeadersForSaveDataList}" Grid.Column="0" Grid.ColumnSpan="3" Margin="2,2,2,2" >
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -256,7 +278,8 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <Button Name="SaveDefectProperies" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" Content="Save" Margin="2,2,2,2" Click="SaveDefectProperies_Click" />
+                    <Button Name="SaveDefectProperies" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Content="Save" Margin="2,2,2,2" Click="SaveDefectProperies_Click" />
+                    <Button Name="SaveHeaderListButton" Margin="2,2,2,2" Grid.Column="2" Grid.Row="3" Content="Save list" Click="SaveHeaderListButton_Click"/>
                 </Grid>
             </TabItem>
         </TabControl>

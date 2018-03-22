@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Data;
 
 namespace Results
 {
@@ -8,10 +9,15 @@ namespace Results
         
 
     }
-    
-    public class LDLTSDataFile
-    {
-        public string FileName { get; set; }
+
+	public class LDLTSDataFile
+	{
+		private static string _SplitByOffsetValue;
+		
+		public static string SplitByOffsetValue { get {  return _SplitByOffsetValue; } set {
+				_SplitByOffsetValue = value;
+			} }
+		public string FileName { get; set; }
         public string FileNameShort { get; set; }
         public decimal Temperature { get; set; }
 
