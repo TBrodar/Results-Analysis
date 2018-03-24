@@ -12,6 +12,7 @@ namespace Results
 
 	public class LDLTSDataFile
 	{
+		public bool isSelected = false;
 		private static string _SplitByOffsetValue;
 		
 		public static string SplitByOffsetValue { get {  return _SplitByOffsetValue; } set {

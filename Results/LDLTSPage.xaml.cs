@@ -121,10 +121,10 @@ namespace Results
 
 		public void LoadLDLTSFile_Click(object sender, RoutedEventArgs e)
 		{
-
+			
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			openFileDialog.Multiselect = true;
-			openFileDialog.Filter = "LDLTS data (*.iso)|*.iso|Results data (*.results)|*.results|All(*.*)|*";
+			openFileDialog.Filter = "LDLTS data (*.iso)|*.iso|Results data (*.LDLTSresults)|*.LDLTSresults|All(*.*)|*";
 
 			if (openFileDialog.ShowDialog() == true)
 			{
@@ -139,6 +139,16 @@ namespace Results
 						}
 						List<LDLTSDataFile> filesLoad = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LDLTSDataFile>>(text);
 						LDLTSDataFiles.AddRange(filesLoad);
+						foreach(LDLTSDataFile f in filesLoad)
+						{
+							if (f.isSelected == true)
+							{
+								if (LDLTSDataFilesListBox.Items.IndexOf(f) > -1)
+								{
+									LDLTSDataFilesListBox.SelectedItems.Add(f);
+								}
+							}
+						}
 						break;
 					}
 					List<string> lines = new List<string>();
@@ -759,7 +769,7 @@ namespace Results
 
 			LDLTSFileComboBox.Items.Clear();
 			if (LDLTSDataFilesListBox.SelectedIndex < 0) return;
-
+			
 			foreach (LDLTSDataFile s in LDLTSDataFilesListBox.Items)
 			{
 				if (LDLTSDataFilesListBox.SelectedItems.Contains(s) == false)
@@ -1222,6 +1232,7 @@ namespace Results
 					);
 				return;
 			}
+			
 
 			SaveFileDialog saveFileDialog = new SaveFileDialog()
 			{
@@ -1343,7 +1354,17 @@ namespace Results
 			{
 				Filter = "Text Files(*.txt)|*.txt|All(*.*)|*"
 			};
-
+			foreach (LDLTSDataFile f in LDLTSDataFilesListBox.Items)
+			{
+				if (LDLTSDataFilesListBox.SelectedItems.Contains(f))
+				{
+					f.isSelected = true;
+				}
+				else
+				{
+					f.isSelected = false;
+				}
+			}
 
 			if (saveFileDialog.ShowDialog() == true)
 			{
@@ -1504,74 +1525,92 @@ namespace Results
 				}
 				using (StreamWriter fileStream = new StreamWriter(Path.Combine(directory, name + ".txt")))
 				{
-					List<string> lines = new List<string>();
+					
+					
 					decimal previousOffset = 0M;
 					if (LDLTSPlotOption.SelectedIndex != 1 && LDLTSPlotOption.SelectedIndex != 2)
 					{
 						return;
 					}
-						foreach (var LDLTSFile in LDLTSDataFiles)
+					decimal value;
+					if (!decimal.TryParse(SplitByOffsetTextBox.Text, out value))
 					{
-						int rows = LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].EmmisionRate.Count;
-						if (lines.Count < rows)
-						{
-							for (int i = rows - lines.Count; i > 0; i--)
-								lines.Add("");
-						}
-						if (LDLTSPlotOption.SelectedIndex == 2)
-						{
-							for (int i = 0; i < rows; i++)
-							{
-								lines[i] += "    " + LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].EmmisionRate[i].ToString()
-									+ "    " + LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].SpectarXYNorm[i].ToString()
-									+ "    " + (LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].SpectarXYNorm[i] + previousOffset).ToString();
-							}
-						}
-						else if (LDLTSPlotOption.SelectedIndex == 1)
-						{
-							for (int i = 0; i < rows; i++)
-							{
-								lines[i] += "    " + LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].EmmisionRate[i].ToString()
-									+ "    " + LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].SpectarY[i].ToString()
-									+ "    " + LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].SpectarYError[i].ToString()
-									+ "    " + (LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].SpectarY[i] + previousOffset).ToString();
-							}
-						} 
-							
-						decimal value;
-						if (!decimal.TryParse(SplitByOffsetTextBox.Text, out value))
-						{
-							SplitByOffsetTextBox.Background = Brushes.Red;
-							value = 0;
-						}
-						else
-						{
-							SplitByOffsetTextBox.Background = null;
-
-						}
-						previousOffset = previousOffset + value;
+						SplitByOffsetTextBox.Background = Brushes.Red;
+						value = 0;
+						return;
+					}
+					else
+					{
+						SplitByOffsetTextBox.Background = null;
 					}
 					string line = "";
 					string line0 = "";
 					foreach (var LDLTSFile in LDLTSDataFiles)
 					{
 						line0 += "    emission(1/s)    SpectarXYNorm    SpectarXYNormWithOffset";
-						line += "    " + LDLTSFile.FileNameShort.Replace(" ", "_") + "    Temperature=" + LDLTSFile.Temperature.ToString()+"K";
+						line += "    " + LDLTSFile.FileNameShort.Replace(" ", "_") + "    Temperature=" + LDLTSFile.Temperature.ToString() + "K";
 						if (LDLTSPlotOption.SelectedIndex == 2)
 						{
 							line += "    _";
-						} else if (LDLTSPlotOption.SelectedIndex == 1)
+						}
+						else if (LDLTSPlotOption.SelectedIndex == 1)
 						{
 							line0 += "    emission(1/s)    SpectarY    SpectarYError + SpectarYErrorWithOffset";
 							line += "     _    _";
 						}
 					}
-					lines.Insert(0, line);
-					lines.Insert(0, line0);
-					foreach(var s in lines)
+					fileStream.WriteLine(line0);
+					fileStream.WriteLine(line);
+					int numberofrows = 0;
+					foreach(var LDLTSFile in LDLTSDataFiles)
 					{
-						fileStream.WriteLine(s);
+						if (LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].EmmisionRate.Count > numberofrows)
+						{
+							numberofrows = LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].EmmisionRate.Count;
+						}
 					}
+					string line3 = "";
+					if (LDLTSPlotOption.SelectedIndex == 2)
+					{
+						for (int j = 0; j < numberofrows; j++)
+							foreach (var LDLTSFile in LDLTSDataFiles)
+							{
+								if (j < LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].EmmisionRate.Count)
+								{
+									line3 += "    " + LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].EmmisionRate[j].ToString()
+										+ "    " + LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].SpectarXYNorm[j].ToString()
+										+ "    " + (LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].SpectarXYNorm[j] + previousOffset).ToString();
+								} else
+								{
+									line3 += "    _    _    _";
+								}
+								fileStream.WriteLine(line3);
+
+								previousOffset = previousOffset + value;
+							}
+					}
+					else if (LDLTSPlotOption.SelectedIndex == 1)
+					{
+						for (int j = 0; j < numberofrows; j++)
+							foreach (var LDLTSFile in LDLTSDataFiles)
+							{
+								if (j < LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].EmmisionRate.Count)
+								{
+									line3 += "    " + LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].EmmisionRate[j].ToString()
+									+ "    " + LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].SpectarY[j].ToString()
+									+ "    " + LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].SpectarYError[j].ToString()
+									+ "    " + (LDLTSFile.LDLTSSpectrumFiles[LDLTSFile.SelectedNumericalMethodIndex].SpectarY[j] + previousOffset).ToString();
+								}
+								else
+								{
+									line3 += "    _    _    _    _";
+								}
+								fileStream.WriteLine(line3);
+
+								previousOffset = previousOffset + value;
+							}
+					}
+					
 				}
 			}
 		}
