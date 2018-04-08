@@ -53,6 +53,7 @@
                 </ComboBox>
                 <Button Content="Refresh" Click="Button_Click" MinWidth="100"/>
                 <ToggleButton Name="DataToolTipToggleButton" IsChecked="True" MinWidth="100" Content="Data tool tip" Click="DataToolTipToggleButton_Click" />
+                <ToggleButton Name="TemperatureLabelsToggleButton" IsChecked="True" MinWidth="100" Content="Show temperatures" Click="TemperatureLabelsToggleButton_Click" />
                 <Button Content="Save spectra" Name="ScreenCaptureButton" MinWidth="100" Click="ScreenCaptureButton_Click" />
             </WrapPanel>
             <Grid Name="ForGraphSave"  Grid.Row="1" Grid.Column="0" >
@@ -95,7 +96,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" Name="Column3" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -105,21 +106,101 @@
 
 
                     <Button Name="LoadButton" Content="Load" Grid.Column="0" Margin="2,2,2,2"  Grid.Row="0"  Height="20" VerticalAlignment="Bottom" Click="LoadLDLTSFile_Click" />
-                    <Button Name="SortLDLTSFiles" Content="Sort" Grid.Column="1" Margin="2,2,2,2" Grid.Row="0" Click="SortLDLTSFiles_Click" />
-                    <Button Content="Remove" Grid.Column="2" Grid.Row="0" Margin="2,2,2,2" Click="Remove_Click" />
+                    <Button Content="Remove" Grid.Column="1" Grid.Row="0" Margin="2,2,2,2" Click="Remove_Click" />
+                    <Button Name="LDLTSFilePopupButton"  Content="Show more" Grid.Column="2" Margin="2,2,2,2" Grid.Row="0" Click="LDLTSFilePopupButton_Click" >
+                        <Button.ContextMenu>
+                            <ContextMenu Name="LDLTSFileContextMenu" Closed="LDLTSFileContextMenu_Closed">
+                                <MenuItem Name="SortLDLTSFilesMenuItem" Header="Sort" Click="SortLDLTSFiles_Click" />
+                                <MenuItem Name="ReloadDataMenuItem" Header="Reload selected data files" Click="ReloadDataButton_Click" />
+                                <MenuItem Name="UpdateCorrectedAmplitudes" Header="Update all CorrectedAmplitudes" Click="UpdateCorrectedAmplitudes_Click" />
+                                
+                                <Separator />
+                                <MenuItem Name="AddHeader" Header="Show parameter" >
+                                    
+                                </MenuItem>
+                                <MenuItem Name="RemoveHeader" Header="Hide parameter">
+                                    
+                                </MenuItem>
+                                <MenuItem Name="AcceptHeaderChanges" Header="Accept change of selected parameters" Click="AcceptHeaderChanges_Click" />
+                                <Separator />
+                                <MenuItem Header="Other" >
+                                    <MenuItem Name="LoadOtherFilesTemperatures"  Click="LoadOtherFilesTemperatures_Click" >
+                                        <MenuItem.Header>
+                                            <Grid >
+
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <Label Padding="0" Grid.Column="0" Grid.Row="0" Content="Load temperature from other files without extension " />
+                                                <TextBox Grid.Column="1" Grid.Row="0" MinWidth="50" Text="" Name="LoadTemperaturesFromOtherFilesExtensionTextBox" />
+                                            </Grid>
+                                        </MenuItem.Header>
+                                    </MenuItem>
+                                    <MenuItem Header="Remove set name from display name (in name format Sample_SetName_OtherLabels)" Click="MenuItem_Click" />
+                                </MenuItem>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
+               <!--     <Popup Name="LDLTSFilePopup" Grid.Column="2" Grid.Row="0" Placement="Bottom" PlacementTarget="{Binding ElementName=LDLTSFilePopupButton}" AllowsTransparency="True">
+                        <Grid Name="MoreGrid">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions >
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Name="SortLDLTSFiles" Content="Sort" Grid.Column="0" Margin="2,0,2,0" Grid.Row="0" Click="SortLDLTSFiles_Click" />
+                            <Button Name="ReloadDataButton" Content="Reload data" Grid.Column="0" Margin="2,0,2,0" Grid.Row="1" Click="ReloadDataButton_Click" />
+                            <Button Name="ShowCroppedPoints" Content="Show number of cut points" Grid.Column="0" Margin="2,0,2,0" Grid.Row="2" Click="ShowCroppedPoints_Click" />
+                            <Button Name="ShowComment" Content="Reload data" Grid.Column="0" Margin="2,0,2,0" Grid.Row="3" Click="ShowComment_Click" />
+                        </Grid>
+                    </Popup>-->
+
                     <ListBox x:Name="LDLTSDataFilesListBox" HorizontalContentAlignment="Stretch"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding LDLTSDataFiles}" Margin="2,2,2,2" SelectionMode="Multiple" SelectionChanged="LDLTSDataFilesListBox_SelectionChanged" >
                         <ListBox.ItemTemplate>
                             <DataTemplate >
-                                <Grid >
+                                <Grid Name="DataTemplateGridLDLTSFilesListBox">
+                                    <Grid.ColumnDefinitions >
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <ComboBox Grid.Column="0" ItemsSource="{Binding NumericalMethods}" MinWidth="100" SelectedIndex="{Binding SelectedNumericalMethodIndex}" >
+                                        <ComboBox.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Name="SameNumericalMethodContexMenu" Header="Set same numerical method for all" Click="SameNumericalMethodContexMenu_Click" />
+                                            </ContextMenu>
+                                        </ComboBox.ContextMenu>
+                                    </ComboBox> 
+                                    <TextBox Grid.Column="1"  MinWidth="200" Margin="2,0,2,0"  Text="{Binding FileNameShort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                     <TextBox Grid.Column="2" HorizontalAlignment="Right" MinWidth="50" Margin="2,0,0,0" Text="{Binding Temperature, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <Label Grid.Column="3" HorizontalAlignment="Right" Content="K" Margin="0,0,2,0" />
+                                    <TextBox Grid.Column="4" Name="AddedHeaders"  HorizontalAlignment="Right" MinWidth="20" Margin="2,0,2,0" Text="{Binding AddedHeaders, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </Grid>
+                            </DataTemplate>
+                            <!-- <DataTemplate >
+                                <Grid Name="DataTemplateGridLDLTSFilesListBox">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="8*"/>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    
+
                                     <Label Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Content="{Binding FileNameShort}" />
-                                    
+
                                     <TextBox Grid.Column="1" HorizontalAlignment="Right" MinWidth="50" Text="{Binding Temperature}"/>
                                     <Label Grid.Column="2" Content="K" />
                                     <ComboBox Grid.Column="3" ItemsSource="{Binding NumericalMethods}" MinWidth="100" SelectedIndex="{Binding SelectedNumericalMethodIndex}" >
@@ -129,10 +210,13 @@
                                             </ContextMenu>
                                         </ComboBox.ContextMenu>
                                     </ComboBox>
+                                    <TextBox Name="CroppedPoints" Grid.Column="4" Text="{Binding NumberOfCroppedPoints, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Right" MinWidth="50" />
+                                    <TextBox Name="Comment" Text="{Binding Properties[1][2], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Grid.Column="5" HorizontalAlignment="Right" MinWidth="50"  />
                                 </Grid>
-                            </DataTemplate>
+                            </DataTemplate>-->
                         </ListBox.ItemTemplate>
                     </ListBox>
+                    
                     <Button Content="Select all" Grid.Column="0" Margin="2,2,2,2" Grid.ColumnSpan="2" Grid.Row="2" Click="SelectAll_Click"  />
                     <Button Content="Deselect all" Grid.Column="2" Margin="2,2,2,2" Grid.Row="2" Click="Deselectall_Click" />
                 </Grid>
