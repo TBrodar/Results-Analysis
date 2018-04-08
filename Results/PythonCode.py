@@ -145,7 +145,7 @@ result = False;
  
 #TVRegDiff(C2, iterations, alpha, dx=step, ep=divisionByZeroParameter, scale='small')
 def TVRegDiff( data, itern, alph, u0=None, scale='small', ep=1e-6, dx=None):
-    
+    print("info : (Started4)\r\n", end="") 
     global result
     ## code starts here
     # Make sure we have a column vector
@@ -213,7 +213,6 @@ def TVRegDiff( data, itern, alph, u0=None, scale='small', ep=1e-6, dx=None):
             u = u - s; 
             
     elif (scale.lower() == 'large'):
-        
         # Construct antidifferentiation operator and its adjoint.
         A = lambda v: np.cumsum(v)
         AT = lambda w: ( sum(w) * np.ones( len( w ) ) - np.transpose( np.concatenate(([0.0], np.cumsum( w[:-1] ) )) ) )
@@ -232,7 +231,6 @@ def TVRegDiff( data, itern, alph, u0=None, scale='small', ep=1e-6, dx=None):
         u = u0
         # Precompute.
         ATd = AT( data )
-        
         # Main loop.
         for ii in range(1, itern + 1):
             # Diagonal matrix of weights, for linearizing E-L equation.
@@ -253,9 +251,8 @@ def TVRegDiff( data, itern, alph, u0=None, scale='small', ep=1e-6, dx=None):
             
             linop = lambda v: ( alph * L * v + AT( A( v ) ) )
             linop = splin.LinearOperator((n, n), linop)
-            
             [s, info_i] = sparse.linalg.cg( linop, -g, None, tol, maxit, None, np.dot(R.transpose(), R) )
-            print("iteration,      relative change,      gradient norm |    {0:4d}                 {1:.3e}              {2:.3e}\r\n".format(ii, np.linalg.norm( s[0] ) / np.linalg.norm( u ), np.linalg.norm( g ) ))
+            print("iteration,      relative change,      gradient norm |    {0:4d}                 {1:.3e}              {2:.3e}\r\n".format(ii, np.linalg.norm( s[0] ) / np.linalg.norm( u ), np.linalg.norm( g ) ), end="")
   
             if info_i == 0 :
                 result = True
@@ -456,11 +453,11 @@ else :
     Scale = 'small'
 
 # u = TVRegDiff( data, iter, alph, u0, scale, ep, dx, plotflag, diagflag );
-
+print("info : (Started2)\r\n", end="") 
 C2D = TVRegDiff(C2, iterations, alpha, dx=step, ep=divisionByZeroParameter, scale=Scale)
 
 C2S += [C2[0]]
-
+print("info : (Started3)\r\n", end="") 
 #izračun W i N
 if(selectedScale == 1) :
     num = len(C2D)

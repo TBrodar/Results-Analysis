@@ -89,7 +89,7 @@ namespace Results
 
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 startInfo.FileName = MainWindow.PythonPath;
-                startInfo.Arguments = WindowInstance.PythonCodePath + " "+ "\"" + CVDataFile.Replace('\\', '/') + "\""; //"\"" + CVFiles.CVFileNames[CVFileNamesComboBox.SelectedIndex].Replace('\\', '/') + "\""
+                startInfo.Arguments = "\"" + WindowInstance.PythonCodePath + "\"" + " "+ "\"" + CVDataFile.Replace('\\', '/') + "\""; //"\"" + CVFiles.CVFileNames[CVFileNamesComboBox.SelectedIndex].Replace('\\', '/') + "\""
 
                 startInfo.UseShellExecute = false;
                 startInfo.CreateNoWindow = true;
@@ -103,7 +103,7 @@ namespace Results
                 startInfo.RedirectStandardError = true;
                 startInfo.StandardErrorEncoding = System.Text.Encoding.UTF8;
 
-                //process.EnableRaisingEvents = true;
+                process.EnableRaisingEvents = true;
 
                 process.StartInfo = startInfo;
                 try { 
@@ -142,7 +142,7 @@ namespace Results
                             Thread.Sleep(500);
                             continue;
                         }
-
+						
                         if (result.Contains("Error"))
                         { 
                             WindowInstance.NWResults.Items.Dispatcher.BeginInvoke(new NWResultsListBoxItemUpdateDelegate(NWResultsUpdateItem),
@@ -253,9 +253,20 @@ namespace Results
                             WindowInstance.NWResults.Items.Dispatcher.BeginInvoke(new NWResultsListBoxItemUpdateDelegate(NWResultsUpdateItem),
                                RunLabelName + "\n " + "(Result did not converge)"
                                );
-                        }
+                        } else if (process.HasExited)
+						{
+							string a = process.StandardError.ReadToEnd();
+							if (result != null)
+							{
+								continue;
+							}
+							WindowInstance.NWResults.Items.Dispatcher.BeginInvoke(new NWResultsListBoxItemUpdateDelegate(NWResultsUpdateItem),
+							   RunLabelName + "\n" + "Exited" + process.StandardError.ReadToEnd()
+							   );
+							alive = false;
+						}
 
-                    }
+					}
 
                     process.WaitForExit(1000);
                     if (!process.HasExited)

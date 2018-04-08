@@ -542,12 +542,13 @@ namespace Results
                                             s.Add(new ObservablePoint((double)OneData.XData, (double)OneData.Y2Data));
                                         }
                                     }
-                                    CVPlotCollection.Add(
-                                        new LineSeries
-                                        {
-                                            Title = "Input " + PythonRunCodeInstance.RunLabelName.Substring(0, PythonRunCodeInstance.RunLabelName.IndexOf(" alpha(")),
-                                            LineSmoothness = 0,
-                                            Fill = Brushes.Transparent,
+									CVPlotCollection.Add(
+										new LineSeries
+										{
+											Title = "Input " + PythonRunCodeInstance.RunLabelName.Substring(0, PythonRunCodeInstance.RunLabelName.IndexOf(" alpha(")),
+											LineSmoothness = 0,
+											Fill = Brushes.Transparent,
+											PointGeometry = null,
                                             Values = s
                                         });
                                 }
@@ -595,7 +596,8 @@ namespace Results
                                      Title = PythonRunCodeInstance.RunLabelName.Substring(0, PythonRunCodeInstance.RunLabelName.IndexOf(",Zero(")),
                                      LineSmoothness = 0,
                                      Fill = Brushes.Transparent,
-                                     Values = s
+									 PointGeometry = null,
+									 Values = s
                                  });
                                 
                             }

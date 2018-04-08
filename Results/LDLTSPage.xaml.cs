@@ -113,10 +113,70 @@ namespace Results
 					}
 					catch { }
 				}
+
+
 			}
+			LDLTSDataFile.VisibleHeadersParameter = new List<int>();
+			LDLTSDataFile.VisibleHeadersKey = new List<int>();
+
+			UpdateVisibleLDLTSFilesHeaders();
+
 			if (HeaderLinesList.Count > 0) SavedHeaderTemplatesComboBox.SelectedIndex = 0;
 			SavedHeaderTemplatesComboBox.Items.Clear();
 			foreach (string s in HeaderLinesClass.HeadersNames) SavedHeaderTemplatesComboBox.Items.Add(s);
+		}
+
+		public void UpdateVisibleLDLTSFilesHeaders()
+		{
+			RemoveHeader.Items.Clear();
+			for (int i = 0; i < LDLTSDataFile.VisibleHeadersParameter.Count; i++)
+			{
+				MenuItem m = new MenuItem();
+				m.Header = LoadForm.LDLTSIsoFile.AllParameters[LDLTSDataFile.VisibleHeadersParameter[i]] + " - " + LoadForm.LDLTSIsoFile.AllKeys[LDLTSDataFile.VisibleHeadersParameter[i]][LDLTSDataFile.VisibleHeadersKey[i]];
+				m.Name = "R" +i.ToString();
+				m.Click += RemoveHeader_Click;
+				RemoveHeader.Items.Add(m);
+			}
+
+			AddHeader.Items.Clear();
+			for (int i = 0; i < LoadForm.LDLTSIsoFile.AllParameters.Count; i++){
+				MenuItem m = new MenuItem();
+				m.Name = "N" + i.ToString();
+				m.Header = LoadForm.LDLTSIsoFile.AllParameters[i];
+				
+
+				for (int j = 0; j < LoadForm.LDLTSIsoFile.AllKeys[i].Count; j++)
+				{
+					if (i == 0 && j < 8) continue;
+					MenuItem s = new MenuItem();
+					s.Header = LoadForm.LDLTSIsoFile.AllKeys[i][j];
+					s.Click += AddHeader_Click;
+					bool ok = true;
+					for (int z = 0; z < LDLTSDataFile.VisibleHeadersParameter.Count; z++)
+					{
+						if (LDLTSDataFile.VisibleHeadersParameter[z] == i && LDLTSDataFile.VisibleHeadersKey[z] == j)
+						{
+							ok = false;
+						}
+					}
+					if (ok)
+					{
+						m.Items.Add(s);
+					}
+				}
+				AddHeader.Items.Add(m);
+			}
+			foreach (LDLTSDataFile file in LDLTSDataFiles)
+			{
+				file.AddedHeaders = "";
+				for (int i = 0; i < LDLTSDataFile.VisibleHeadersKey.Count; i++)
+				{
+					file.AddedHeaders += LoadForm.LDLTSIsoFile.AllKeys[LDLTSDataFile.VisibleHeadersParameter[i]][LDLTSDataFile.VisibleHeadersKey[i]]
+						 + "(" + file.Properties[LDLTSDataFile.VisibleHeadersParameter[i]][LDLTSDataFile.VisibleHeadersKey[i]]+ ") ";
+				}
+			}
+
+			LDLTSDataFilesListBox.Items.Refresh();
 		}
 
 		public void LoadLDLTSFile_Click(object sender, RoutedEventArgs e)
@@ -124,7 +184,7 @@ namespace Results
 			
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			openFileDialog.Multiselect = true;
-			openFileDialog.Filter = "LDLTS data (*.iso)|*.iso|Results data (*.LDLTSresults)|*.LDLTSresults|All(*.*)|*";
+			openFileDialog.Filter = "LDLTS data (*.iso)|*.iso|Results data (*.LDLTSresults)|*.LDLTSresults|Text data with FileName header (*.txt)|*.txt|All(*.*)|*";
 
 			if (openFileDialog.ShowDialog() == true)
 			{
@@ -138,8 +198,16 @@ namespace Results
 							text = reader.ReadToEnd();
 						}
 						List<LDLTSDataFile> filesLoad = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LDLTSDataFile>>(text);
-						LDLTSDataFiles.AddRange(filesLoad);
 						foreach(LDLTSDataFile f in filesLoad)
+						{
+							if (f.AddedHeaders == null)
+							{
+								f.AddedHeaders = "";
+							}
+						}
+						LDLTSDataFiles.AddRange(filesLoad);
+						LDLTSDataFilesListBox.Items.Refresh();
+						foreach (LDLTSDataFile f in filesLoad)
 						{
 							if (f.isSelected == true)
 							{
@@ -149,137 +217,265 @@ namespace Results
 								}
 							}
 						}
-						break;
-					}
-					List<string> lines = new List<string>();
-					try
-					{
-						using (StreamReader reader = new StreamReader(Name))
-						{
-							while (reader.Peek() > -1)
-								lines.Add(reader.ReadLine());
-						}
-					}
-					catch (Exception ee)
-					{
-						MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-						"Error : Load file. Name : " + Name
-						);
+						
 						continue;
 					}
-
-					string shortName = Path.GetFileNameWithoutExtension(Name);
-					int number = -1;
-
-					foreach (var f in LDLTSDataFiles)
+					else if (Path.GetExtension(Name).Contains("txt"))
 					{
-						if (f.FileNameShort == shortName && number == -1)
+						List<string> lines2 = new List<string>();
+						try
 						{
-							number = 0;
-						}
-						if (f.FileNameShort.Contains("(") && f.FileNameShort.Contains(")"))
-						{
-							string poms = f.FileNameShort.Substring(0, f.FileNameShort.LastIndexOf('('));
-							if (poms == shortName)
+							using (StreamReader reader = new StreamReader(Name))
 							{
-								int pomInt = -1;
-								string numstr = f.FileNameShort.Split('(')[f.FileNameShort.Split('(').Length - 1];
-								if (numstr[numstr.Length - 1].Equals(')'))
+								while (reader.Peek() > -1)
+									lines2.Add(reader.ReadLine());
+								if (lines2[0].Contains("FileName"))
 								{
-									if (int.TryParse(numstr.Substring(0, numstr.Length - 1), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out pomInt))
+									OpenFileDialog openFileDialog2 = new OpenFileDialog();
+									openFileDialog2.Title = "Select file in folder with measurement files";
+									if (openFileDialog.ShowDialog() == true)
 									{
-										if (pomInt > number)
+										string[] l = lines2[0].Split(' ');
+										int headerindex = -1;
+										for (int i = 0; i < l.Length; i++)
 										{
-											number = pomInt;
+											if (l[i].Contains("FileName") == true)
+											{
+												headerindex = i;
+												break;
+											}
+										}
+										if (headerindex == -1) continue;
+
+										string Directory = Path.GetDirectoryName(openFileDialog.FileName);
+										List<string> a = new List<string>();
+										for (int lineInt = 1; lineInt < lines2.Count; lineInt++)
+										{
+											l = lines2[lineInt].Split(' ');
+											bool isLoaded = false;
+											foreach( LDLTSDataFile file in LDLTSDataFiles)
+											{
+												if (file.FileName == Path.Combine(Directory, l[headerindex] + ".iso"))
+												{
+													isLoaded = true;
+													break;
+												}
+											}
+											if (isLoaded) continue;
+											LoadLDLTSFileFromPath(Path.Combine(Directory, l[headerindex] + ".iso"));
 										}
 									}
 								}
 							}
 						}
-					}
-					if (number != -1)
-					{
-						shortName = Path.GetFileNameWithoutExtension(Name) + "(" + (number + 1).ToString("N0") + ")";
-					}
-
-
-					List<decimal> data = new List<decimal>();
-					decimal value;
-					foreach (string OneData in lform.getProperties(lform.ldltsisofile.data, ref lines))
-					{
-						if (!decimal.TryParse(OneData, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out value))
-						{
-							MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-							"Error : Capacitance transient data is not number. " + OneData + "\n" + Name
-							);
-							return;
-						}
-						data.Add(value);
-					}
-
-					List<string> ParametersLines = lform.getProperties(lform.ldltsisofile.parameters, ref lines);
-					string temperaturestring = lform.getValue(lform.ldltsisofile.parameterskeys.temperature, ref ParametersLines);
-					decimal temperature;
-					if (!decimal.TryParse(temperaturestring, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out temperature))
-					{
-						MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-						"Error : temperature is not number. " + temperaturestring + "\n" + Name
-						);
+						catch { }
 						continue;
-					}
-
-					List<string> GeneratorLines = lform.getProperties(lform.ldltsisofile.acquisition, ref lines);
-					string sampleRate = lform.getValue(lform.ldltsisofile.acquisitionkeys.samplingRate, ref GeneratorLines);
-					long sampleRateNum;
-					if (!long.TryParse(sampleRate, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out sampleRateNum))
-					{
-						MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-						"Error : Sample rate is not number. " + sampleRate + "\n" + Name
-						);
-						continue;
-					}
-
-					LDLTSDataFile DataFileInstance = new LDLTSDataFile()
-					{
-						FileName = Name,
-						FileNameShort = shortName,
-						CapacitanceTransient = data,
-						Temperature = temperature,
-						SampleRate = sampleRateNum,
-
-						Properties = lform.fillWithValues(ref lines),
-
-						maxCapacitanceTransient = data.Max(),
-						MinCapacitanceTransient = data.Min(),
-
-						LDLTSSpectrumFiles = new List<LDLTSDataFile.LDLTSSpectrumFile>(),
-						NumericalMethods = new List<string>(),
-						SelectedNumericalMethodIndex = 0
-					};
-
-
-					//add LDLTS spectrum files to last LDLTS data file
-
-					foreach (string ext in LDLTSDataFile.ContinFileTypeExpansion)
-					{
-						addLDLTSSpectrum(Name.Replace(".iso", ext), "Contin (" + ext + ")", ref DataFileInstance);
-					}
-					foreach (string ext in LDLTSDataFile.FtikregFileTypeExpansion)
-					{
-						addLDLTSSpectrum(Name.Replace(".iso", ext), "Ftikreg (" + ext + ")", ref DataFileInstance);
-					}
-					foreach (string ext in LDLTSDataFile.FlogFileTypeExpansion)
-					{
-						addLDLTSSpectrum(Name.Replace(".iso", ext), "Flog (" + ext + ")", ref DataFileInstance);
-					}
-
-					LDLTSDataFiles.Add(DataFileInstance);
-
+					} 
+					LoadLDLTSFileFromPath(Name);
 				}
-
+				UpdateVisibleLDLTSFilesHeaders();
 				LDLTSDataFilesListBox.Items.Refresh();
 			}
 
+		}
+
+		private int LoadLDLTSFileFromPath(string Name)
+		{ 
+			List<string> lines = new List<string>();
+			try
+			{
+				using (StreamReader reader = new StreamReader(Name))
+				{
+					while (reader.Peek() > -1)
+						lines.Add(reader.ReadLine());
+				}
+			}
+			catch (Exception ee)
+			{
+				MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
+				"Error : Load file. Name : " + Name
+				);
+				return 0;
+			}
+
+			string shortName = Path.GetFileNameWithoutExtension(Name);
+			int number = -1;
+
+			foreach (var f in LDLTSDataFiles)
+			{
+				if (f.FileNameShort == shortName && number == -1)
+				{
+					number = 0;
+				}
+				if (f.FileNameShort.Contains("(") && f.FileNameShort.Contains(")"))
+				{
+					string poms = f.FileNameShort.Substring(0, f.FileNameShort.LastIndexOf('('));
+					if (poms == shortName)
+					{
+						int pomInt = -1;
+						string numstr = f.FileNameShort.Split('(')[f.FileNameShort.Split('(').Length - 1];
+						if (numstr[numstr.Length - 1].Equals(')'))
+						{
+							if (int.TryParse(numstr.Substring(0, numstr.Length - 1), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out pomInt))
+							{
+								if (pomInt > number)
+								{
+									number = pomInt;
+								}
+							}
+						}
+					}
+				}
+			}
+			if (number != -1)
+			{
+				shortName = Path.GetFileNameWithoutExtension(Name) + "(" + (number + 1).ToString("N0") + ")";
+			}
+
+
+			List<decimal> data = new List<decimal>();
+			decimal value;
+			foreach (string OneData in lform.getProperties(lform.ldltsisofile.data, ref lines))
+			{
+				if (!decimal.TryParse(OneData, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out value))
+				{
+					MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
+					"Error : Capacitance transient data is not number. " + OneData + "\n" + Name
+					);
+					return 0;
+				}
+				data.Add(value);
+			}
+
+			List<string> ParametersLines = lform.getProperties(lform.ldltsisofile.parameters, ref lines);
+			string temperaturestring = lform.getValue(lform.ldltsisofile.parameterskeys.temperature, ref ParametersLines);
+			decimal temperature;
+			if (!decimal.TryParse(temperaturestring, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out temperature))
+			{
+				MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
+				"Error : temperature is not number. " + temperaturestring + "\n" + Name
+				);
+				return 0;
+			}
+
+			List<string> GeneratorLines = lform.getProperties(lform.ldltsisofile.acquisition, ref lines);
+			string sampleRate = lform.getValue(lform.ldltsisofile.acquisitionkeys.samplingRate, ref GeneratorLines);
+			long sampleRateNum;
+			if (!long.TryParse(sampleRate, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out sampleRateNum))
+			{
+				MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
+				"Error : Sample rate is not number. " + sampleRate + "\n" + Name
+				);
+				return 0;
+			}
+
+
+
+			List<List<string>> propLines = lform.fillWithValues(ref lines);
+			propLines[0][8] = shortName;
+			int NoCutPoints = -1;
+			string[] pomWords = new string[] { "crop", "cut" };
+			foreach (string word in pomWords)
+				if (shortName.Contains(word))
+				{
+					string p = shortName.Substring(shortName.IndexOf(word) + word.Length);
+					int i;
+					for (i = 0; i < p.Length; i++)
+					{
+						if (char.IsDigit(p[i]) == false)
+						{
+							break;
+						}
+					}
+					if (i > 0)
+					{
+						try
+						{
+							NoCutPoints = int.Parse(p.Substring(0, i));
+							break;
+						}
+						catch { }
+					}
+				}
+				else
+				{
+					if (propLines[1][7].ToLower().Contains("points cut"))
+					{
+						if (propLines[1][7].ToLower().Substring(propLines[1][7].ToLower().IndexOf("points") + "points".Length).Contains("cut"))
+						{
+							bool ok = false;
+							for (int i = propLines[1][7].ToLower().IndexOf("points") - 1; i >= 0; i--)
+							{
+								if (char.IsDigit(propLines[1][7][i]))
+								{
+									int j;
+									for (j = i; j >= 0; j--)
+									{
+										if (char.IsDigit(propLines[1][7][j]) == false)
+										{
+											ok = true;
+											try
+											{
+												NoCutPoints = int.Parse(propLines[1][7].Substring(j + 1, i - j));
+											}
+											catch { }
+											break;
+										}
+									}
+
+								}
+								else if (propLines[1][7][i] == ' ')
+								{
+									continue;
+								}
+								else if (char.IsLetter(propLines[1][7][i]))
+								{
+									break;
+								}
+
+								if (ok) { break; }
+							}
+						}
+					}
+				}
+			propLines[0][9] = NoCutPoints.ToString("N0", CultureInfo.InvariantCulture);
+			LDLTSDataFile DataFileInstance = new LDLTSDataFile()
+			{
+				FileName = Name,
+				FileNameShort = shortName,
+				CapacitanceTransient = data,
+				Temperature = temperature,
+				SampleRate = sampleRateNum,
+				NumberOfCroppedPoints = NoCutPoints,
+				AddedHeaders = "",
+				Properties = propLines,
+
+				maxCapacitanceTransient = data.Max(),
+				MinCapacitanceTransient = data.Min(),
+
+				LDLTSSpectrumFiles = new List<LDLTSDataFile.LDLTSSpectrumFile>(),
+				NumericalMethods = new List<string>(),
+				SelectedNumericalMethodIndex = 0
+			};
+
+
+			//add LDLTS spectrum files to last LDLTS data file
+
+			foreach (string ext in LDLTSDataFile.ContinFileTypeExpansion)
+			{
+				addLDLTSSpectrum(Name.Replace(".iso", ext), "Contin (" + ext + ")", ref DataFileInstance);
+			}
+			foreach (string ext in LDLTSDataFile.FtikregFileTypeExpansion)
+			{
+				addLDLTSSpectrum(Name.Replace(".iso", ext), "Ftikreg (" + ext + ")", ref DataFileInstance);
+			}
+			foreach (string ext in LDLTSDataFile.FlogFileTypeExpansion)
+			{
+				addLDLTSSpectrum(Name.Replace(".iso", ext), "Flog (" + ext + ")", ref DataFileInstance);
+			}
+
+			LDLTSDataFiles.Add(DataFileInstance);
+			return 1;
 		}
 
 		public void addLDLTSSpectrum(string FilePath, string Type, ref LDLTSDataFile LDLTSDataFileInstance)
@@ -524,10 +720,18 @@ namespace Results
 						}
 					}
 
+					string title;
+					if (TemperatureLabelsToggleButton.IsChecked == true)
+					{
+						title = LDLTSDataFiles[index].Properties[4][0].Replace(" ","") + " K";
+					} else
+					{
+						title = LDLTSDataFiles[index].FileNameShort;
+					}
 					LDLTSPlotCollection.Add(
 						 new LineSeries
 						 {
-							 Title = LDLTSDataFiles[index].FileNameShort,
+							 Title = title,
 							 LineSmoothness = 0,
 							 Fill = System.Windows.Media.Brushes.Transparent,
 							 Values = s
@@ -593,10 +797,19 @@ namespace Results
 					}
 					try
 					{
+						string title;
+						if (TemperatureLabelsToggleButton.IsChecked == true)
+						{
+							title =item.Properties[4][0].Replace(" ", "") + " K";
+						}
+						else
+						{
+							title = item.FileNameShort + "\n(" + item.NumericalMethods[NumericalMethodIndex] + ", " + SpectrumPointsCount.ToString("N", CultureInfo.InvariantCulture) + ")";
+						}
 						LDLTSPlotCollection.Add(
 						 new LineSeries
 						 {
-							 Title = item.FileNameShort + "\n(" + item.NumericalMethods[NumericalMethodIndex] + ", " + SpectrumPointsCount.ToString("N", CultureInfo.InvariantCulture) + ")",
+							 Title = title,
 							 LineSmoothness = 0,
 							 Fill = Brushes.Transparent,
 							 PointGeometry = null,
@@ -1133,6 +1346,7 @@ namespace Results
 							Emissions = new List<decimal>(),
 							EmissionsDevioations = new List<decimal>(),
 							Amplitudes = new List<decimal>(),
+							AmplitudesCorrected = new List<double>(),
 							AmplitudesDeviations = new List<decimal>(),
 							Broadenings = new List<decimal>(),
 							SourceFiles = new List<LDLTSDataFile>()
@@ -1146,6 +1360,8 @@ namespace Results
 					defres[index].Emissions.Add(peak.EmRate);
 					defres[index].EmissionsDevioations.Add(peak.EmRateError);
 					defres[index].Amplitudes.Add(peak.Amplitude);
+					UpdateCorrectedAmplitudes_Click(new object(), new RoutedEventArgs());
+					defres[index].AmplitudesCorrected.Add(peak.AmplitudeCorrected);
 					defres[index].AmplitudesDeviations.Add(peak.AmplitudeError);
 					defres[index].Broadenings.Add(peak.Broadening);
 					defres[index].SourceFiles.Add(item);
@@ -1402,7 +1618,14 @@ namespace Results
 								if (s.selectedPropertiesIndex < 0) continue;
 								if (s.selectedPropertiesIndex > 0)
 								{
-									line = line + string.Format("{0," + ((LoadForm.LDLTSIsoFile.AllKeys[s.selectedPropertiesIndex])[s.selectedKeysIndex].Length).ToString("0.#", CultureInfo.InvariantCulture) + "} ", (def.SourceFiles[i].Properties[s.selectedPropertiesIndex])[s.selectedKeysIndex]);
+									string a;
+									if (s.selectedPropertiesIndex == 1 && s.selectedKeysIndex == 7)
+									{
+										a = (def.SourceFiles[i].Properties[s.selectedPropertiesIndex])[s.selectedKeysIndex].Replace(' ','_');
+									} else {
+										a = (def.SourceFiles[i].Properties[s.selectedPropertiesIndex])[s.selectedKeysIndex];
+									}
+									line = line + string.Format("{0," + ((LoadForm.LDLTSIsoFile.AllKeys[s.selectedPropertiesIndex])[s.selectedKeysIndex].Length).ToString("0.#", CultureInfo.InvariantCulture) + "} ", a);
 								}
 								else
 								{
@@ -1436,9 +1659,17 @@ namespace Results
 									{
 										line = line + string.Format("{0," + (len).ToString("0.#") + "} ", def.SourceFiles[i].NumericalMethods[def.SourceFiles[i].SelectedNumericalMethodIndex].Replace(' ', '_'));
 									}
-									else if (s.selectedKeysIndex == 7)
+									else if (s.selectedKeysIndex == 8)
 									{
 										line = line + string.Format("{0," + (len).ToString("0.#") + "} ", def.SourceFiles[i].FileNameShort);
+									}
+									else if (s.selectedKeysIndex == 9)
+									{
+										line = line + string.Format("{0," + (len).ToString("0.#") + "} ", def.SourceFiles[i].NumberOfCroppedPoints.ToString("N0", CultureInfo.InvariantCulture));
+									}
+									else if (s.selectedKeysIndex == 7)
+									{
+										line = line + string.Format("{0," + (len).ToString("0.#") + "} ", def.AmplitudesCorrected[i].ToString("E", CultureInfo.InvariantCulture));
 									}
 								}
 							}
@@ -1475,6 +1706,8 @@ namespace Results
 
 		private void SortLDLTSFiles_Click(object sender, RoutedEventArgs e)
 		{
+			LDLTSFilePopupButton.ContextMenu.IsOpen = false;
+		//	LDLTSFilePopupButton_Click(new object(), new RoutedEventArgs());
 
 			for (int i = 0; i < LDLTSDataFiles.Count; i++)
 				for (int j = i + 1; j < LDLTSDataFiles.Count; j++)
@@ -1557,8 +1790,12 @@ namespace Results
 					string line = "";
 					string line0 = "";
 					int numberofrows = 0;
-					foreach (LDLTSDataFile LDLTSFile in LDLTSDataFilesListBox.SelectedItems)
+					foreach (LDLTSDataFile LDLTSFile in LDLTSDataFilesListBox.Items)
 					{
+						if (LDLTSDataFilesListBox.SelectedItems.Contains(LDLTSFile) == false)
+						{
+							continue;
+						}
 						if (LDLTSFile.SelectedNumericalMethodIndex < 0)
 						{
 							continue;
@@ -1585,8 +1822,12 @@ namespace Results
 					line = null;
 					if (SplitOptionComboBox.SelectedIndex == 0)
 					{
-						foreach (LDLTSDataFile LDLTSFile in LDLTSDataFilesListBox.SelectedItems)
+						foreach (LDLTSDataFile LDLTSFile in LDLTSDataFilesListBox.Items)
 						{
+							if (LDLTSDataFilesListBox.SelectedItems.Contains(LDLTSFile) == false)
+							{
+								continue;
+							}
 							if (LDLTSFile.SelectedNumericalMethodIndex < 0)
 							{
 								offsets.Add(0M);
@@ -1607,11 +1848,17 @@ namespace Results
 						}
 					} if (SplitOptionComboBox.SelectedIndex == 3)
 					{
-						foreach(LDLTSDataFile LDLTSFile in LDLTSDataFilesListBox.SelectedItems)
+						foreach(LDLTSDataFile LDLTSFile in LDLTSDataFilesListBox.Items)
 						{
-							if (LDLTSFile.SelectedNumericalMethodIndex < 0)
+							if (LDLTSDataFilesListBox.SelectedItems.Contains(LDLTSFile) == false)
 							{
 								continue;
+							}
+							if (LDLTSFile.SelectedNumericalMethodIndex < 0)
+							{
+								offsets.Add(0M);
+								continue;
+
 							}
 							offsets.Add(previousOffset);
 							previousOffset = previousOffset + value;
@@ -1622,8 +1869,12 @@ namespace Results
 					{
 						for (int j = 0; j < numberofrows; j++)
 						{ 
-							foreach (LDLTSDataFile LDLTSFile in LDLTSDataFilesListBox.SelectedItems)
+							foreach (LDLTSDataFile LDLTSFile in LDLTSDataFilesListBox.Items)
 							{
+								if (LDLTSDataFilesListBox.SelectedItems.Contains(LDLTSFile) == false)
+								{
+									continue;
+								}
 								if (LDLTSFile.SelectedNumericalMethodIndex < 0)
 								{
 									continue;
@@ -1646,8 +1897,12 @@ namespace Results
 					{
 						for (int j = 0; j < numberofrows; j++)
 						{ 
-							foreach (LDLTSDataFile LDLTSFile in LDLTSDataFilesListBox.SelectedItems)
+							foreach (LDLTSDataFile LDLTSFile in LDLTSDataFilesListBox.Items)
 							{
+								if (LDLTSDataFilesListBox.SelectedItems.Contains(LDLTSFile) == false)
+								{
+									continue;
+								}
 								if (LDLTSFile.SelectedNumericalMethodIndex < 0)
 								{
 									continue;
@@ -1759,7 +2014,7 @@ namespace Results
 			try
 			{
 
-				for (int i = 1; i < HeadersForSaveDataList.Count; i++)
+				for (int i = 0; i < HeadersForSaveDataList.Count; i++)
 				{
 					paramList.Add(HeadersForSaveDataList[i].properties[HeadersForSaveDataList[i].selectedPropertiesIndex]);
 					keysList.Add(HeadersForSaveDataList[i].keys[HeadersForSaveDataList[i].selectedKeysIndex]);
@@ -1797,6 +2052,359 @@ namespace Results
 
 			}
 		}
+
+		private void LDLTSFilePopupButton_Click(object sender, RoutedEventArgs e)
+		{
+			if ((string)LDLTSFilePopupButton.Content != "Hide more")
+			{
+				try
+				{
+					LDLTSFilePopupButton.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+					LDLTSFilePopupButton.ContextMenu.PlacementTarget = LDLTSFilePopupButton;
+					LDLTSFilePopupButton.ContextMenu.IsOpen = true;
+				}
+				catch { }
+				LDLTSFilePopupButton.Content = "Hide more";
+			} else
+			{
+				LDLTSFilePopupButton.ContextMenu.IsOpen = false;
+				LDLTSFilePopupButton.Content = "Show more";
+			}
+
+		}
+
+		private void ReloadDataButton_Click(object sender, RoutedEventArgs e)
+		{
+			//LDLTSFilePopupButton_Click(new object(), new RoutedEventArgs());
+			foreach (LDLTSDataFile File in LDLTSDataFilesListBox.SelectedItems)
+			{
+				string Name = File.FileName;
+				
+				List<string> lines = new List<string>();
+				try
+				{
+					using (StreamReader reader = new StreamReader(Name))
+					{
+						while (reader.Peek() > -1)
+							lines.Add(reader.ReadLine());
+					}
+				}
+				catch (Exception ee)
+				{
+					MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
+					"Error : Load file. Name : " + Name
+					);
+					continue;
+				}
+
+				string shortName = Path.GetFileNameWithoutExtension(Name);
+				int number = -1;
+
+				foreach (var f in LDLTSDataFiles)
+				{
+					if (f.FileNameShort == shortName && number == -1)
+					{
+						number = 0;
+					}
+					if (f.FileNameShort.Contains("(") && f.FileNameShort.Contains(")"))
+					{
+						string poms = f.FileNameShort.Substring(0, f.FileNameShort.LastIndexOf('('));
+						if (poms == shortName)
+						{
+							int pomInt = -1;
+							string numstr = f.FileNameShort.Split('(')[f.FileNameShort.Split('(').Length - 1];
+							if (numstr[numstr.Length - 1].Equals(')'))
+							{
+								if (int.TryParse(numstr.Substring(0, numstr.Length - 1), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out pomInt))
+								{
+									if (pomInt > number)
+									{
+										number = pomInt;
+									}
+								}
+							}
+						}
+					}
+				}
+				if (number != -1)
+				{
+					shortName = Path.GetFileNameWithoutExtension(Name) + "(" + (number + 1).ToString("N0") + ")";
+				}
+
+
+				List<decimal> data = new List<decimal>();
+				decimal value;
+				foreach (string OneData in lform.getProperties(lform.ldltsisofile.data, ref lines))
+				{
+					if (!decimal.TryParse(OneData, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out value))
+					{
+						MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
+						"Error : Capacitance transient data is not number. " + OneData + "\n" + Name
+						);
+						return;
+					}
+					data.Add(value);
+				}
+
+				List<string> ParametersLines = lform.getProperties(lform.ldltsisofile.parameters, ref lines);
+				string temperaturestring = lform.getValue(lform.ldltsisofile.parameterskeys.temperature, ref ParametersLines);
+				decimal temperature;
+				if (!decimal.TryParse(temperaturestring, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out temperature))
+				{
+					MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
+					"Error : temperature is not number. " + temperaturestring + "\n" + Name
+					);
+					continue;
+				}
+
+				List<string> GeneratorLines = lform.getProperties(lform.ldltsisofile.acquisition, ref lines);
+				string sampleRate = lform.getValue(lform.ldltsisofile.acquisitionkeys.samplingRate, ref GeneratorLines);
+				long sampleRateNum;
+				if (!long.TryParse(sampleRate, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out sampleRateNum))
+				{
+					MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
+					"Error : Sample rate is not number. " + sampleRate + "\n" + Name
+					);
+					continue;
+				}
+
+				List<List<string>> propLines = lform.fillWithValues(ref lines);
+				propLines[0][8] = shortName;
+				int NoCutPoints = -1;
+				string[] pomWords = new string[] { "crop", "cut" };
+				foreach (string word in pomWords)
+					if (shortName.Contains(word))
+					{
+						string p = shortName.Substring(shortName.IndexOf(word) + word.Length);
+						int i;
+						for (i = 0; i < p.Length; i++)
+						{
+							if (char.IsDigit(p[i]) == false)
+							{
+								break;
+							}
+						}
+						if (i > 0)
+						{
+							try
+							{
+								NoCutPoints = int.Parse(p.Substring(0, i));
+								break;
+							}
+							catch { }
+						}
+					}
+					else 
+					{
+						if (propLines[1][7].ToLower().Contains("points"))
+						{
+							if (propLines[1][7].ToLower().Substring(propLines[1][7].ToLower().IndexOf("points") + "points".Length).Contains("cut"))
+							{
+								bool ok = false;
+								for (int i = propLines[1][7].ToLower().IndexOf("points") - 1; i >= 0; i--)
+								{
+									if (char.IsDigit(propLines[1][7][i]))
+									{
+										int j;
+										for (j = i; j >= 0; j--)
+										{
+											if (char.IsDigit(propLines[1][7][j]) == false)
+											{
+												ok = true;
+												try
+												{
+													NoCutPoints = int.Parse(propLines[1][7].Substring(j + 1, i - j));
+												}
+												catch { }
+												break;
+											}
+										}
+
+									}
+									else if (propLines[1][7][i] == ' ')
+									{
+										continue;
+									}
+									else if (char.IsLetter(propLines[1][7][i]))
+									{
+										break;
+									}
+
+									if (ok) { break; }
+								}
+							}
+						}
+					}
+				propLines[0][9] = NoCutPoints.ToString("N0", CultureInfo.InvariantCulture);
+
+				File.FileNameShort = shortName;
+				File.CapacitanceTransient = data;
+				File.Temperature = temperature;
+				File.NumberOfCroppedPoints = NoCutPoints;
+				File.SampleRate = sampleRateNum;
+				File.Properties = propLines;
+				File.maxCapacitanceTransient = data.Max();
+				File.MinCapacitanceTransient = data.Min();
+
+			UpdateVisibleLDLTSFilesHeaders();
+			LDLTSDataFilesListBox.Items.Refresh();
+		}
+	}
+
+		private void AddHeader_Click(object sender, RoutedEventArgs e)
+		{
+			//LDLTSFilePopupButton_Click(new object(), new RoutedEventArgs());
+			MenuItem m = (MenuItem)e.Source;
+			MenuItem mp = (MenuItem)m.Parent;
+			string key = (string)m.Header;
+			string param = (string)mp.Header;
+			foreach (string p in LoadForm.LDLTSIsoFile.AllParameters)
+			{
+				if (p == param)
+				{
+					int i = LoadForm.LDLTSIsoFile.AllParameters.IndexOf(p);
+					foreach (string s in LoadForm.LDLTSIsoFile.AllKeys[i])
+					{
+						if (s == key)
+						{
+							int j = LoadForm.LDLTSIsoFile.AllKeys[i].IndexOf(s);
+							LDLTSDataFile.VisibleHeadersParameter.Add(i);
+							LDLTSDataFile.VisibleHeadersKey.Add(j);
+							UpdateVisibleLDLTSFilesHeaders();
+							return;
+						}
+					}
+				}
+			}
+		}
+		private void RemoveHeader_Click(object sender, RoutedEventArgs e)
+		{
+		//	LDLTSFilePopupButton_Click(new object(), new RoutedEventArgs());
+				int i = int.Parse(((MenuItem)e.Source).Name.Substring(1));
+				LDLTSDataFile.VisibleHeadersKey.RemoveAt(i);
+				LDLTSDataFile.VisibleHeadersParameter.RemoveAt(i);
+			UpdateVisibleLDLTSFilesHeaders();
+		}
+		
+		 
+		private void UpdateCorrectedAmplitudes_Click(object sender, RoutedEventArgs e)
+		{
+			foreach (LDLTSDataFile s in LDLTSDataFiles)
+			{
+				foreach (LDLTSDataFile.LDLTSSpectrumFile sf in s.LDLTSSpectrumFiles)
+				{
+					foreach (LDLTSDataFile.LDLTSSpectrumFile.Peak peak in sf.Peaks)
+					{
+						peak.AmplitudeCorrected = (double)peak.Amplitude * Math.Exp((double)(peak.EmRate * (1M / s.SampleRate) * s.NumberOfCroppedPoints));
+					}
+				}
+			}
+		}
+
+		private void AcceptHeaderChanges_Click(object sender, RoutedEventArgs e)
+		{ 
+			foreach (LDLTSDataFile file in LDLTSDataFilesListBox.SelectedItems)
+			{
+				string[] s = file.AddedHeaders.Split(')');
+				if (s.Length <= 0) break;
+
+				foreach (string s2 in s)
+				{
+					string[] s3 = s2.Split('(');
+					if (s3.Length != 2) break;
+					s3[0] = s3[0].Replace(" ", "");
+					for(int i = 0; i < LoadForm.LDLTSIsoFile.AllParameters.Count; i++)
+					{ 
+							if (LoadForm.LDLTSIsoFile.AllKeys[i].Contains(s3[0]))
+							{
+							int index = LoadForm.LDLTSIsoFile.AllKeys[i].IndexOf(s3[0]);
+							file.Properties[i][index] = s3[1];
+							} 
+					} 
+				}
+			}
+
+		}
+
+		private void LDLTSFileContextMenu_Closed(object sender, RoutedEventArgs e)
+		{
+			LDLTSFilePopupButton_Click(new object(), new RoutedEventArgs());
+		}
+
+		private void LoadOtherFilesTemperatures_Click(object sender, RoutedEventArgs e)
+		{
+			string extension = LoadTemperaturesFromOtherFilesExtensionTextBox.Text;
+
+			foreach (LDLTSDataFile file in LDLTSDataFilesListBox.SelectedItems)
+			{
+				string directory = Path.GetDirectoryName(file.FileName);
+				string name = file.FileNameShort;
+				string type = Path.GetExtension(file.FileName);
+				if (name.Contains(extension) == false) continue;
+				string name2 = name.Substring(0,name.LastIndexOf(extension));
+				string file2 = Path.Combine(directory, name2 + type);
+				if (File.Exists(file2) == false) continue;
+				using (StreamReader reader = new StreamReader(file2))
+				{
+					List<string> a = new List<string>();
+					while (reader.EndOfStream == false)
+					{
+						a.Add(reader.ReadLine());
+					}
+
+					List<string> b = lform.getProperties(lform.ldltsisofile.parameters, ref a);
+					string temp = lform.getValue("temperature", ref b);
+					if (temp != "")
+					{
+						try
+						{
+							file.Temperature = decimal.Parse(temp, CultureInfo.InvariantCulture);
+						}
+						catch { }
+						file.Properties[4][0] = temp; 
+					}
+				}
+			}
+			LDLTSDataFilesListBox.Items.Refresh();
+		}
+
+		private void TemperatureLabelsToggleButton_Click(object sender, RoutedEventArgs e)
+		{
+			if (TemperatureLabelsToggleButton.IsChecked == true)
+			{
+				TemperatureLabelsToggleButton.Content = "Show temperatures";
+			} else
+			{
+				TemperatureLabelsToggleButton.Content = "Show details";
+			}
+			redrawLDLTSPlot();
+		}
+
+		private void MenuItem_Click(object sender, RoutedEventArgs e)
+		{
+			foreach(LDLTSDataFile file in LDLTSDataFilesListBox.SelectedItems)
+			{
+				int a = file.FileNameShort.IndexOf("_");
+				int b = -1;
+				if (a > 0)
+				{
+					for(int i = a+1; i < file.FileNameShort.Length; i++)
+					{
+						if (file.FileNameShort[i] == '_')
+						{
+							b = i;
+							break;
+						}
+					}
+					if (b != -1)
+					{
+						file.FileNameShort = file.FileNameShort.Substring(0, a) + file.FileNameShort.Substring(b);
+					}
+				}
+			}
+			LDLTSDataFilesListBox.Items.Refresh();
+		}
+		
 	}
 	public class HeaderForSaveDataClass
     {

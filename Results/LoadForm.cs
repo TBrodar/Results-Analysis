@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Results
 {
@@ -13,7 +10,6 @@ namespace Results
 
         public class LDLTSIsoFile
         {
-            
             static public List<string> AllParameters = new List<string>();
             static public List<List<string>> AllKeys = new List<List<string>>();
 
@@ -39,9 +35,11 @@ namespace Results
                     pom.Add("△CStandandDeviation(pF)");
                     pom.Add("Broadening");
                     pom.Add("NumericalMethod");
-                    pom.Add("FileName     ");
+					pom.Add("△CAmplitudePointsCutCorrected(pF)");
+					pom.Add("FileName");
+					pom.Add("PointsCut");
 
-                    AllKeys.Add(pom);
+					AllKeys.Add(pom);
                     AllKeys.Add(generalkeys.GeneralKeysList);
                     AllKeys.Add(generatorkeys.GeneratorKeysList);
                     AllKeys.Add(acquisitionkeys.AcquisitionKeysList);
@@ -50,7 +48,8 @@ namespace Results
                 }
 
             }
-            public string data = "data";
+
+			public string data = "data";
 
             public string general = "general";
             public class GeneralKeys
@@ -243,12 +242,7 @@ namespace Results
         }
         public Material material = new Material();
 
-        public LDLTSFile fillWithValues(List<string> allLines)
-        {
-            LDLTSFile ldltsfile = new LDLTSFile();
 
-            return ldltsfile;
-        }
 
         public List<List<string>> fillWithValues(ref List<string> allData)
         {

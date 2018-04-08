@@ -18,6 +18,11 @@ namespace Results
 		public static string SplitByOffsetValue { get {  return _SplitByOffsetValue; } set {
 				_SplitByOffsetValue = value;
 			} }
+		public static List<int> VisibleHeadersParameter { get; set; }
+		public static List<int> VisibleHeadersKey { get; set; }
+
+		public string AddedHeaders { get; set; }
+
 		public string FileName { get; set; }
         public string FileNameShort { get; set; }
         public decimal Temperature { get; set; }
@@ -27,6 +32,7 @@ namespace Results
         public List<decimal> CapacitanceTransient { get; set; }
         public decimal MinCapacitanceTransient { get; set; }
         public decimal maxCapacitanceTransient { get; set; }
+		public int NumberOfCroppedPoints { get; set; }
 
         public long SampleRate { get; set; }   // [Hz]
                                                // public long NumberOfSamples { get; set; }
@@ -57,8 +63,10 @@ namespace Results
                 public decimal Broadening { get; set; }
                 public decimal EmRateError { get; set; }
                 public decimal AmplitudeError { get; set; }
+				public double AmplitudeCorrected { get; set; }
 
-                public string DefectName { get; set; }
+
+				public string DefectName { get; set; }
 
                 public System.Windows.Media.Brush Color { get; set; }
                 public System.Windows.Media.Brush ColorName { get; set; }
@@ -91,10 +99,11 @@ namespace Results
         public List<decimal> Emissions { get; set; }
         public List<decimal> EmissionsDevioations { get; set; }
 
-        public List<decimal> Amplitudes { get; set; }
+        public List<decimal> Amplitudes           { get; set; }
         public List<decimal> AmplitudesDeviations { get; set; }
+		public List<double> AmplitudesCorrected  { get; set; }
 
-        public List<decimal> Broadenings { get; set; }
+		public List<decimal> Broadenings { get; set; }
 
         public List<decimal> Temperatures { get; set; }
 
