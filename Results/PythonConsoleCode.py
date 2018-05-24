@@ -2,7 +2,7 @@
     import statsmodels.api as sm
 except :
     print("Error: instal statsmodels.api in python \r\n", end="") 
-            
+    
 alive = True
 
 while alive == True:
@@ -16,7 +16,7 @@ while alive == True:
         fy = [float(y) for y in ystr.split("|")]
         
         fxp = sm.add_constant(fx)
-         
+        
         mymodel = sm.OLS(fy,fxp)
         res = mymodel.fit() 
         

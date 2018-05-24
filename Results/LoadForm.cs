@@ -210,16 +210,263 @@ namespace Results
         }
         public LDLTSFile ldltsspectrumfile = new LDLTSFile();
 
-        public class Python
-        {
-            public string python = "Python";
-            public string pythoncodepath = "Python code path";
-            public string pythoncallpath = "Python call path";
-         //   public string pythonconsolepath = "Python console path";
-        }
-        public Python python = new Python();
+		public class DLTFile
+		{
+			static public List<string> AllParameters = new List<string>();
+			static public List<List<string>> AllKeys = new List<List<string>>();
 
-        public class CVNW
+			public DLTFile()
+			{
+				if (AllParameters.Count <= 0)
+				{
+					AllParameters.Add("Defect");
+					AllParameters.Add(general);
+					AllParameters.Add(parameters);
+					AllParameters.Add(sample);
+					AllParameters.Add(capacitancemeter);
+					AllParameters.Add(generator);
+					AllParameters.Add(acquisition);
+				}
+
+				if (AllKeys.Count <= 0)
+				{
+					List<string> pom = new List<string>();
+					pom.Add("Temperature(K)");
+					pom.Add("Emission(eV)");
+					//pom.Add("EmissionStandardDeviation(eV)");
+					pom.Add("△CAmplitude(pF)");
+					//pom.Add("△CStandandDeviation(pF)");
+					//pom.Add("Broadening");
+					//pom.Add("NumericalMethod");
+					pom.Add("△CAmplitudePointsCutCorrected(pF)");
+					pom.Add("FileName");
+					pom.Add("FilePath");
+					pom.Add("DefectName");
+					//pom.Add("PointsCut");
+
+					AllKeys.Add(pom);
+					AllKeys.Add(generalkeys.GeneralKeysList);
+					AllKeys.Add(parameterskeys.ParametersKeysList);
+					AllKeys.Add(samplekeys.SampleKeysList);
+					AllKeys.Add(capacitancemeterkeys.CapacitancemeterKeysList);
+					AllKeys.Add(generatorkeys.GeneratorKeysList);
+					AllKeys.Add(acquisitionkeys.AcquisitionKeysList);
+				}
+
+			}
+
+			public string data = "data";
+
+			public string general = "general";
+			public class GeneralKeys
+			{
+				public List<string> GeneralKeysList = new List<string>();
+
+				public GeneralKeys()
+				{
+					GeneralKeysList.Add(software);
+					GeneralKeysList.Add(hardware);
+					GeneralKeysList.Add(serialnumber);
+					GeneralKeysList.Add(user);
+					GeneralKeysList.Add(type);
+					GeneralKeysList.Add(source);
+					GeneralKeysList.Add(date);
+					GeneralKeysList.Add(comment);
+					GeneralKeysList.Add(database);
+					GeneralKeysList.Add(dataname);
+					GeneralKeysList.Add(IsoFilesSaved);
+					GeneralKeysList.Add(_1exp);
+					GeneralKeysList.Add(_3exp);
+				}
+
+				public string software = "software";
+				public string hardware = "hardware";
+				public string serialnumber = "serial number";
+				public string user = "user";
+				public string type = "type";
+				public string source = "source";
+				public string date = "date";
+				public string comment = "comment";
+				public string database = "data base";
+				public string dataname = "data name";
+				public string IsoFilesSaved = "IsoFilesSaved";
+				public string _1exp = "1exp";
+				public string _3exp = "3exp";
+			}
+			public GeneralKeys generalkeys = new GeneralKeys();
+
+			public string parameters = "parameters";
+			public class ParametersKeys
+			{
+				public List<string> ParametersKeysList = new List<string>();
+
+				public ParametersKeys()
+				{
+					ParametersKeysList.Add(Nomeasurements);
+					ParametersKeysList.Add(ratewindow);
+					ParametersKeysList.Add(temperatureramp);
+					ParametersKeysList.Add(ratewindowmultiplier);
+					ParametersKeysList.Add(capacitancemeterrange);
+
+					ParametersKeysList.Add(gain);
+					ParametersKeysList.Add(BiasCapacitance);
+
+					//ParametersKeysList.Add(bias);
+					//ParametersKeysList.Add(FirstPulseBias);
+					//ParametersKeysList.Add(SecondPulseBias);
+					//ParametersKeysList.Add(InjectionPulseBias);
+					//ParametersKeysList.Add(FirstPulseWidth);
+					//ParametersKeysList.Add(SecondPulseWidth);
+					//ParametersKeysList.Add(InjectionPulseWidth);
+					//ParametersKeysList.Add(Secondpulse);
+					//ParametersKeysList.Add(Secondpulseinterlacing);
+					//ParametersKeysList.Add(Injectionpulse);
+					//ParametersKeysList.Add(LikePulse1);
+
+					//ParametersKeysList.Add(CurrentTransient);
+					ParametersKeysList.Add(magneticfield);
+					ParametersKeysList.Add(pressure);
+					ParametersKeysList.Add(illumination);
+				}
+
+				public string Nomeasurements = "No measurements";
+				public string ratewindow = "rate window";
+				public string temperatureramp = "temperature ramp";
+				public string ratewindowmultiplier = "rate window multiplier";
+				public string capacitancemeterrange = "capacitance meter range";
+
+				//public string bias = "bias";
+				//public string FirstPulseBias = "1st Pulse Bias";
+				//public string SecondPulseBias = "2nd Pulse Bias";
+				//public string InjectionPulseBias = "Injection Pulse Bias";
+				//public string FirstPulseWidth = "1st Pulse Width";
+				//public string SecondPulseWidth = "2nd Pulse Width";
+				//public string InjectionPulseWidth = "Injection Pulse Width";
+				//public string Secondpulse = "2nd pulse";
+				//public string Secondpulseinterlacing = "2nd pulse interlacing";
+				//public string Injectionpulse = "Injection pulse";
+				//public string LikePulse1 = "Like Pulse1";
+
+				public string gain = "gain";
+				public string BiasCapacitance = "Bias Capacitance";
+				//public string CurrentTransient = "CurrentTransient";
+				public string magneticfield = "magnetic field";
+				public string pressure = "pressure";
+				public string illumination = "illumination";
+			}
+			public ParametersKeys parameterskeys = new ParametersKeys();
+
+
+			public string sample = "sample";
+			public class SampleKeys
+			{
+				public List<string> SampleKeysList = new List<string>();
+
+				public SampleKeys()
+				{
+					SampleKeysList.Add(Material);
+					SampleKeysList.Add(Identifier);
+					SampleKeysList.Add(area);
+					SampleKeysList.Add(effectivemass);
+					SampleKeysList.Add(dielectricconstant);
+					SampleKeysList.Add(NoBiasCapacitance);
+					SampleKeysList.Add(BiasCapacitance);
+				}
+
+				public string Material = "Material";
+				public string Identifier = "Identifier";
+				public string area = "area";
+				public string effectivemass = "area";
+				public string dielectricconstant = "dielectric constant";
+				public string NoBiasCapacitance = "No Bias Capacitance";
+				public string BiasCapacitance = "Bias Capacitance";
+			}
+			public SampleKeys samplekeys = new SampleKeys();
+
+			public string capacitancemeter = "capacitance meter";
+			public class CapacitancemeterKeys
+			{
+				public List<string> CapacitancemeterKeysList = new List<string>();
+				public CapacitancemeterKeys()
+				{
+					CapacitancemeterKeysList.Add(range);
+				}
+				public string range = "range";
+			}
+			public CapacitancemeterKeys capacitancemeterkeys = new CapacitancemeterKeys();
+
+			public string generator = "generator";
+			public class GeneratorKeys
+			{
+				public List<string> GeneratorKeysList = new List<string>();
+
+				public GeneratorKeys()
+				{
+					GeneratorKeysList.Add(bias);
+					GeneratorKeysList.Add(FirstPulseBias);
+					GeneratorKeysList.Add(SecondPulseBias);
+					GeneratorKeysList.Add(InjectionPulseBias);
+					GeneratorKeysList.Add(FirstPulseWidth);
+					GeneratorKeysList.Add(SecondPulseWidth);
+					GeneratorKeysList.Add(InjectionPulseWidth);
+					GeneratorKeysList.Add(Secondpulse);
+					GeneratorKeysList.Add(Secondpulseinterlacing);
+					GeneratorKeysList.Add(Injectionpulse);
+					GeneratorKeysList.Add(LikePulse1);
+				}
+
+				public string bias = "bias";
+				public string FirstPulseBias = "1st Pulse Bias";
+				public string SecondPulseBias = "2nd Pulse Bias";
+				public string InjectionPulseBias = "Injection Pulse Bias";
+				public string FirstPulseWidth = "1st Pulse Width";
+				public string SecondPulseWidth = "2nd Pulse Width";
+				public string InjectionPulseWidth = "Injection Pulse Width";
+				public string Secondpulse = "2nd pulse";
+				public string Secondpulseinterlacing = "2nd pulse interlacing";
+				public string Injectionpulse = "Injection pulse";
+				public string LikePulse1 = "Like Pulse1";
+			}
+			public GeneratorKeys generatorkeys = new GeneratorKeys();
+
+			public string acquisition = "acquisition";
+			public class AcquisitionKeys
+			{
+				public List<string> AcquisitionKeysList = new List<string>();
+				public AcquisitionKeys()
+				{
+					AcquisitionKeysList.Add(firstsample);
+					AcquisitionKeysList.Add(lastsample);
+					AcquisitionKeysList.Add(samplingRate);
+					AcquisitionKeysList.Add(NumberOfSamples);
+					AcquisitionKeysList.Add(Noscans);
+					AcquisitionKeysList.Add(gain);
+				}
+
+				public string firstsample = "first sample";
+				public string lastsample = "last sample";
+				public string samplingRate = "Sampling Rate";
+				public string NumberOfSamples = "No samples";
+				public string Noscans = "No scans";
+				public string gain = "gain";
+			}
+			public AcquisitionKeys acquisitionkeys = new AcquisitionKeys();
+			
+
+		}
+		public DLTFile dltfile = new DLTFile();
+
+		public class Python
+		{
+			public string python = "Python";
+			public string pythoncodepath = "Python code path";
+			public string pythoncallpath = "Python call path";
+			//   public string pythonconsolepath = "Python console path";
+		}
+
+		public Python python = new Python();
+
+		public class CVNW
         {
             public string cvnw = "C-V->N-W";
             public string alpha = "Alpha parameter";
@@ -269,23 +516,53 @@ namespace Results
             return n;
         }
 
-        public List<String> getProperties(string property, ref List<String> allData)
+		public List<List<string>> fillWithValuesDFTFile(ref List<string> allData)
+		{
+			List<List<string>> n = new List<List<string>>();
+			foreach (List<string> s in DLTFile.AllKeys)
+			{
+				List<string> poms = new List<string>();
+				poms.AddRange(s);
+				n.Add(poms);
+			}
+			int paramCount = DLTFile.AllParameters.Count;
+			for (int i = 0; i < paramCount; i++)
+			{
+				if (i == 0) continue; // don't fill Defect property
+
+				List<string> properties = getProperties(DLTFile.AllParameters[i], ref allData);
+				int keyCount = n[i].Count;
+				for (int j = 0; j < keyCount; j++)
+				{
+					n[i][j] = getValue(n[i][j], ref properties);
+				}
+			}
+
+			return n;
+		}
+
+		public List<String> getProperties(string property, ref List<String> allData)
         {
             List<string> returnList = new List<string>();
             bool intresting = false;
             foreach (var line in allData)
             {
-                if (line.Contains("["))
-                {
-                    if (intresting == true)
-                    {
-                        break;
-                    }
-                    if (line.Contains(property))
-                    {
-                        intresting = true;
-                    }
-                }
+				if (line.Length > 0)
+				{
+					string pom = line.Replace(" ", "");
+					if (pom[0] == '[')
+					{
+						if (intresting == true)
+						{
+							break;
+						}
+						if (line.Contains(property))
+						{
+							intresting = true;
+						}
+					}
+				}
+                
                 if (intresting == true)
                 {
                     if (line.Length < 1) continue;
