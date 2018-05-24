@@ -1831,7 +1831,7 @@ namespace Results
 							if (LDLTSFile.SelectedNumericalMethodIndex < 0)
 							{
 								offsets.Add(0M);
-								previousOffset = previousOffset + 0;
+								previousOffset = previousOffset + 0M;
 							} else
 							{
 								if (LDLTSPlotOption.SelectedIndex == 2)

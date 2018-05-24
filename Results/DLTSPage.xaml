@@ -1,0 +1,310 @@
+﻿<Page x:Class="Results.DLTSPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Results"
+      xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="DLTSPage">
+
+    <Grid  Margin="5,5,5,5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid Margin="0,5,0,0" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <WrapPanel Grid.Row="0" Grid.Column="0"  Orientation="Horizontal" HorizontalAlignment="Left" Height="Auto">
+                <ComboBox Name="DLTSPlotOption" Width="150"  SelectedIndex="0" SelectionChanged="DLTSPlotOption_SelectionChanged" >
+                    <ComboBoxItem Content="Plot all selected" />
+                </ComboBox>
+             <!--   <ComboBox Name="SplitOptionComboBox" Width="150" SelectedIndex="0" SelectionChanged="SplitOptionComboBox_SelectionChanged">
+                    <ComboBoxItem Content="Split Verticaly" />
+                    <ComboBoxItem Content="As measured" />
+                    <ComboBoxItem >
+                        <ComboBoxItem.Content>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Label Content="Split by offset " Grid.Column="0" />
+                                
+                            </Grid>
+                        </ComboBoxItem.Content>
+                    </ComboBoxItem>
+                </ComboBox> -->
+                <Button Content="Refresh" Name="RefreshGraph" Click="RefreshGraph_Click"  MinWidth="100"/>
+                <ToggleButton Name="DataToolTipToggleButton" IsChecked="True" MinWidth="100" Content="Data tool tip" Click="DataToolTipToggleButton_Click" />
+                <ToggleButton Name="EmissionsLabelsToggleButton" IsChecked="True" MinWidth="100" Content="Show emissions" Click="EmissionsLabelsToggleButton_Click" />
+                <Button Content="Save spectra" Name="ScreenCaptureButton" MinWidth="100" Click="ScreenCaptureButton_Click" />
+            </WrapPanel>
+            <Grid Name="ForGraphSave"  Grid.Row="1" Grid.Column="0" >
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <lvc:CartesianChart Grid.Column="0" Grid.Row="0" MouseMove="ChartMouseMove" MouseLeave="DLTSPlotGraf_MouseLeave" MouseDown="DLTSPlotGraf_MouseDown" MouseUp="DLTSPlotGraf_MouseUp"  Name="DLTSPlotGraf" Series="{Binding DLTSPlotCollection}"  LegendLocation="Right" >
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis Title="DLTS signal (pF)" ></lvc:Axis>
+                    </lvc:CartesianChart.AxisY>
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Title="Temperature (K)"  ></lvc:Axis>
+                    </lvc:CartesianChart.AxisX>
+                </lvc:CartesianChart>
+            </Grid>
+            <WrapPanel Grid.Row="2" Name="TemperatureRange" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" >
+                <Label Content="Temperature from " />
+                <ComboBox Name="AxisXStartComboBox"  IsEditable="True" Width="100" Margin="2,2,2,2" SelectedIndex="0" >
+                    <ComboBoxItem Content="Start" />
+                </ComboBox>
+                <Label Content=" to " />
+                <ComboBox Name="AxisXEndComboBox"  IsEditable="True" Width="100" Margin="2,2,2,2" SelectedIndex="0" >
+                    <ComboBoxItem Content="end" />
+                </ComboBox>
+            </WrapPanel>
+        </Grid>
+
+        <TabControl Grid.Column="1">
+            <TabItem Header="DLTS data" >
+                <Grid Margin="5,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" Name="Column3" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+
+                    <Button Name="LoadButton" Content="Load" Grid.Column="0" Margin="2,2,2,2"  Grid.Row="0"  Height="20" VerticalAlignment="Bottom" Click="LoadButton_Click" />
+                    <Button Content="Remove" Name="RemoveButton" Grid.Column="1" Grid.Row="0" Margin="2,2,2,2" Click="Remove_Click" />
+                    <Button Name="DLTSFilePopupButton"  Content="Show more" Grid.Column="2" Margin="2,2,2,2" Grid.Row="0" Click="DLTSFilePopupButton_Click" >
+                        <Button.ContextMenu>
+                            <ContextMenu Name="DLTSFileContextMenu" Closed="DLTSFileContextMenu_Closed">
+                                <!--<MenuItem Name="ReloadDataMenuItem" Header="Reload selected data files" Click="ReloadDataButton_Click" -->
+                                <MenuItem Name="SortDLTSFilesMenuItem" Header="Sort" Click="SortDLTSFiles_Click" />
+                                <!--<MenuItem Name="UpdateCorrectedAmplitudes" Header="Update all CorrectedAmplitudes" Click="UpdateCorrectedAmplitudes_Click" />-->
+
+                                <Separator />
+                                <MenuItem Name="AddHeader" Header="Show parameter" >
+
+                                </MenuItem>
+                                <MenuItem Name="RemoveHeader" Header="Hide parameter" >
+
+                                </MenuItem>
+                                <MenuItem Name="AcceptHeaderChanges" Header="Accept change of selected parameters" Click="AcceptHeaderChanges_Click" />
+                                <Separator />
+                                <!--<MenuItem Header="Other" >
+                                    <MenuItem Name="LoadOtherFilesTemperatures"  Click="LoadOtherFilesTemperatures_Click" >
+                                        <MenuItem.Header>
+                                            <Grid >
+
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <Label Padding="0" Grid.Column="0" Grid.Row="0" Content="Load temperature from other files without extension " />
+                                                <TextBox Grid.Column="1" Grid.Row="0" MinWidth="50" Text="" Name="LoadTemperaturesFromOtherFilesExtensionTextBox" />
+                                            </Grid>
+                                        </MenuItem.Header>
+                                    </MenuItem>
+                                    <MenuItem Header="Remove set name from display name (in name format Sample_SetName_OtherLabels)"  />
+                                </MenuItem>-->
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
+
+                    <ListBox x:Name="DLTSDataFilesListBox" HorizontalContentAlignment="Stretch" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding DLTSDataFiles}" Margin="2,2,2,2" SelectionMode="Multiple" SelectionChanged="DLTSDataFilesListBox_SelectionChanged" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate >
+                                <Grid Name="DataTemplateGridDLTSFilesListBox">
+                                    <Grid.ColumnDefinitions >
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBox Grid.Column="0"  MinWidth="200" Margin="2,0,2,0"  Text="{Binding FileNameShort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBox Grid.Column="1" HorizontalAlignment="Right" MinWidth="50" Margin="2,0,0,0" Text="{Binding Emission, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <Label Grid.Column="2" HorizontalAlignment="Right" Content="1/s" Margin="0,0,2,0" />
+                                    <TextBox Grid.Column="3" Name="AddedHeaders"  HorizontalAlignment="Right" MinWidth="20" Margin="2,0,2,0" Text="{Binding AddedHeaders, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <Button Content="Select all" Name="SelectAllDLTSFiles" Grid.Column="0" Margin="2,2,2,2" Grid.ColumnSpan="2" Grid.Row="2" Click="SelectAllDLTSFiles_Click"  />
+                    <Button Content="Deselect all" Grid.Column="2" Margin="2,2,2,2" Grid.Row="2" Name="DeselectAllDLTSFiles" Click="DeselectAllDLTSFiles_Click" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Select Peaks" >
+                <Grid  Margin="5,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <ComboBox Name="DLTSDeepLevel" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="2,0,0,0"  SelectionChanged="DLTSDeepLevel_SelectionChanged"  IsEditable="True"/>
+                    <Button Name="SaveDLTSDeepLevelButton" Grid.Row="0" Grid.Column="2"  Content="Save"  Margin="2,2,2,2" Click="SaveDLTSDeepLevelButton_Click" />
+                    <Button Name="AddPeakButton" Content="Add peak" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Click="AddPeakButton_Click"/>
+                    <Button Name="RemovePeakButton" Content="Remove peak" Grid.Row="1" Grid.Column="2" Click="RemovePeakButton_Click" />
+                    <ListBox x:Name="PeaksListBox_Pick" SelectionMode="Single"  HorizontalContentAlignment="Stretch" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="2,2,2,2" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <!--<RowDefinition Height="Auto" />-->
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0" Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Grid.Row="0" Background="{Binding Color}" Grid.ColumnSpan="2" Content="{Binding Path=EmRate}" ContentStringFormat="e  [1/s]={0:0.##E+00} " Padding="3,3,0,3" Margin="0,0,0,0" />
+                                    </Grid>
+                                    <Grid Grid.Column="1" Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Grid.Row="0" Background="{Binding Color}" Content="{Binding Path=Amplitude}" Grid.ColumnSpan="2" ContentStringFormat="ΔC [pF]={0:0.##E+00} " Padding="3,3,0,3" Margin="0,0,0,0" />
+                                    </Grid>
+                                    <Label Grid.Row="1" Grid.Column="0"  Background="{Binding Color}" Content="{Binding Path=Temperature}" ContentStringFormat="Temperature [K]: {0:0.##E+00}" Padding="3,3,3,3" Margin="0,0,0,0" />
+                                    <!--<Grid Grid.Column="1" Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <ComboBox Grid.Column="0" IsEditable="True" Foreground="{Binding ColorName}" Name="DefectNamesComboBox" Text="{Binding DefectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Path=Defects, Mode=TwoWay, NotifyOnSourceUpdated=True}"  IsTextSearchEnabled="True" />
+                                        <Button  Grid.Column="1" Content=" + "  Name="AddDefect" />
+                                    </Grid>-->
+
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <ListBox x:Name="PeaksListBox" SelectionMode="Single" HorizontalContentAlignment="Stretch" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="2,2,2,2" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <!--<RowDefinition Height="Auto" />-->
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0" Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Grid.Row="0" Background="{Binding Color}" Grid.ColumnSpan="2" Content="{Binding Path=EmRate}" ContentStringFormat="e  [1/s]={0:0.##E+00} " Padding="3,3,0,3" Margin="0,0,0,0" />
+                                    </Grid>
+                                    <Grid Grid.Column="1" Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Grid.Row="0" Background="{Binding Color}" Content="{Binding Path=Amplitude}" Grid.ColumnSpan="2" ContentStringFormat="ΔC [pF]={0:0.##E+00} " Padding="3,3,0,3" Margin="0,0,0,0" />
+                                    </Grid>
+                                    <Label Grid.Row="1" Grid.Column="0"  Background="{Binding Color}" Content="{Binding Path=Temperature}" ContentStringFormat="Temperature [K]: {0:0.##E+00}" Padding="3,3,3,3" Margin="0,0,0,0" />
+                                    <!--<Grid Grid.Column="1" Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <ComboBox Grid.Column="0" IsEditable="True" Foreground="{Binding ColorName}" Name="DefectNamesComboBox" Text="{Binding DefectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Path=Defects, Mode=TwoWay, NotifyOnSourceUpdated=True}"  IsTextSearchEnabled="True" />
+                                        <Button  Grid.Column="1" Content=" + "  Name="AddDefect" />
+                                    </Grid>-->
+
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Save data">
+                <Grid  Margin="5,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Button Name="AddHeaderButton" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Content="Add" Margin="2,2,2,2" Click="AddHeaderButton_Click" />
+                    <ComboBox Name="SavedHeaderTemplatesComboBox" Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="2"  Margin="2,2,2,2" IsEditable="True" SelectionChanged="SavedHeaderTemplatesComboBox_SelectionChanged"  />
+                    <Button Name="RemoveHeaderButton" Grid.Row="0" Grid.Column="2"  Content="Remove"  Margin="2,2,2,2" Click="RemoveHeaderButton_Click"/>
+                    <Button Name="RemoveHeaderTemplateListButton" Margin="2,2,2,2" Grid.Row="1" Grid.Column="2"   Content="Remove list" Click="RemoveHeaderTemplateListButton_Click" />
+                    <ListBox x:Name="DefectSaveHeadersListBox" SelectionMode="Multiple" HorizontalContentAlignment="Stretch" Grid.Row="2" ItemsSource="{Binding HeadersForSaveDataList}" Grid.Column="0" Grid.ColumnSpan="3" Margin="2,2,2,2" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Name="number" Grid.Column="0" Grid.Row="0" ContentStringFormat="{}{0:N0}. column" Content="{Binding index}" />
+                                    <ComboBox Name="Properties" Grid.Column="0" ItemsSource="{Binding properties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  SelectedIndex="{Binding selectedPropertiesIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Grid.Row="1" Margin="2,2,2,2" SelectionChanged="Properties_SelectionChanged"/>
+                                    <ComboBox Name="keys" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding keys, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding selectedKeysIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="2,2,2,2"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Name="SaveDefectProperies" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Content="Save" Margin="2,2,2,2" Click="SaveDefectProperies_Click" />
+                    <Button Name="SaveHeaderListButton" Margin="2,2,2,2" Grid.Column="2" Grid.Row="3" Content="Save list" Click="SaveHeaderListButton_Click" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Page>

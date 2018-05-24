@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Data;
 
@@ -111,6 +112,71 @@ namespace Results
 
 
     }
-    
+	//[Newtonsoft.Json.JsonObject(Newtonsoft.Json.MemberSerialization.OptIn)]
+	public class DLTSDataFile
+	{
+		public bool isSelected = false;
 
+		private static string _SplitByOffsetValue;
+		public static string SplitByOffsetValue
+		{
+			get { return _SplitByOffsetValue; }
+			set
+			{
+				_SplitByOffsetValue = value;
+			}
+		}
+		public static List<int> VisibleHeadersParameter { get; set; }
+		public static List<int> VisibleHeadersKey { get; set; }
+
+		public string AddedHeaders { get; set; }
+
+		public string FileName { get; set; }
+		public string FileNameShort { get; set; }
+		public decimal Temperature { get; set; }
+
+		public List<List<string>> Properties { get; set; }
+		public decimal Emission { get; set; }
+
+		public List<decimal> DLTSSpectrum { get; set; }
+		public List<decimal> DLTSSpectrumTemperatures { get; set; }
+		
+
+		public class Peak
+		{
+			public Peak()
+			{
+				Amplitude = 0;
+				EmRate = 0;
+				Temperature = 0;
+			}
+
+			public decimal EmRate { get; set; }
+			public decimal Amplitude { get; set; }
+			public decimal Temperature { get; set; }
+			//public decimal EmRateError { get; set; }
+			//public decimal AmplitudeError { get; set; }
+			public double AmplitudeCorrected { get; set; }
+			
+			public string DefectName { get; set; }
+			public DLTSDataFile sourceFile { get; set; }
+
+			public System.Windows.Media.Brush Color { get; set; }
+			public System.Windows.Media.Brush ColorName { get; set; }
+			//[Newtonsoft.Json.JsonProperty]
+			 static public List<List<Peak>> DeepLevels { get; set; }
+			//[Newtonsoft.Json.JsonProperty]
+			 static public List<string> DeepLevelNames { get; set; }
+			//[Newtonsoft.Json.JsonProperty]
+			 static public List<DLTSDataFile.Peak> selectedPeak { get; set; }
+			//static public List<string> Defects { get; set; }
+			//static public ObservableCollection<DefectResult> DefectsResults { get; set; }
+		}
+		//public List<List<Peak>> DeepLevelsInstance = new List<List<Peak>>();
+		//public List<string> DeepLevelNamesInstance = new List<string>();
+		//public List<DLTSDataFile.Peak> selectedPeakInstance = new List<Peak>();
+
+
+	}
+	
 }

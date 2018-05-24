@@ -93,6 +93,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataStructure.cs" />
+    <Compile Include="DLTSPage.xaml.cs">
+      <DependentUpon>DLTSPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DLTSTabClass.cs" />
     <Compile Include="LDLTSPage.xaml.cs">
       <DependentUpon>LDLTSPage.xaml</DependentUpon>
@@ -101,6 +104,10 @@
     <Compile Include="LoadForm.cs" />
     <Compile Include="PythonConsoleClass.cs" />
     <Compile Include="RunPythonCodeClass.cs" />
+    <Page Include="DLTSPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="LDLTSPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
