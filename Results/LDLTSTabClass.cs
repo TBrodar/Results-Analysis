@@ -4,12 +4,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Data;
 
 namespace Results
-{
-    class LDLTSTabClass
-    {
-        
-
-    }
+{ 
 
 	public class LDLTSDataFile
 	{
@@ -111,8 +106,7 @@ namespace Results
         public List<LDLTSDataFile> SourceFiles { get; set; }
 
 
-    }
-	//[Newtonsoft.Json.JsonObject(Newtonsoft.Json.MemberSerialization.OptIn)]
+    } 
 	public class DLTSDataFile
 	{
 		public bool isSelected = false;
@@ -153,28 +147,18 @@ namespace Results
 
 			public decimal EmRate { get; set; }
 			public decimal Amplitude { get; set; }
-			public decimal Temperature { get; set; }
-			//public decimal EmRateError { get; set; }
-			//public decimal AmplitudeError { get; set; }
+			public decimal Temperature { get; set; } 
 			public double AmplitudeCorrected { get; set; }
 			
 			public string DefectName { get; set; }
 			public DLTSDataFile sourceFile { get; set; }
 
 			public System.Windows.Media.Brush Color { get; set; }
-			public System.Windows.Media.Brush ColorName { get; set; }
-			//[Newtonsoft.Json.JsonProperty]
-			 static public List<List<Peak>> DeepLevels { get; set; }
-			//[Newtonsoft.Json.JsonProperty]
-			 static public List<string> DeepLevelNames { get; set; }
-			//[Newtonsoft.Json.JsonProperty]
-			 static public List<DLTSDataFile.Peak> selectedPeak { get; set; }
-			//static public List<string> Defects { get; set; }
-			//static public ObservableCollection<DefectResult> DefectsResults { get; set; }
-		}
-		//public List<List<Peak>> DeepLevelsInstance = new List<List<Peak>>();
-		//public List<string> DeepLevelNamesInstance = new List<string>();
-		//public List<DLTSDataFile.Peak> selectedPeakInstance = new List<Peak>();
+			public System.Windows.Media.Brush ColorName { get; set; } 
+			 static public List<List<Peak>> DeepLevels { get; set; } 
+			 static public List<string> DeepLevelNames { get; set; } 
+			 static public List<DLTSDataFile.Peak> selectedPeak { get; set; } 
+		} 
 
 
 	}

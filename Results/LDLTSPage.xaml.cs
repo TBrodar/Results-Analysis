@@ -34,9 +34,7 @@ namespace Results
 		public double AxisXStart { get; set; }
 		public double AxisXEnd { get; set; }
 		public int AxisXPoints { get; set; }
-
-		PythonConsoleClass console = new PythonConsoleClass();
-
+         
 		public class HeaderLinesClass
 		{
 			public static List<string> HeadersNames { get; set; }
@@ -59,10 +57,7 @@ namespace Results
 			LDLTSPlotGraf.DisableAnimations = true;
 
 			LDLTSDataFiles = new List<LDLTSDataFile>();
-
-			DefectsResultsListbox.ItemsSource = LDLTSDataFile.LDLTSSpectrumFile.Peak.DefectsResults;
-			DefectsResultsListbox.DataContext = LDLTSDataFile.LDLTSSpectrumFile.Peak.DefectsResults;
-
+             
 			DataContext = this;
 
 			AxisXStart = 0;
@@ -1169,140 +1164,7 @@ namespace Results
 			PeaksListBox.Items.Refresh();
 
 		}
-
-		private void GetResult_Click(object sender, RoutedEventArgs e)
-		{
-			if (console.alive == true)
-			{
-				if (console.busy == true)
-				{
-					MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-						"Info: Python console is alive and busy. "
-						);
-					return;
-				}
-			}
-			else
-			{
-				console.startPythonConsole();
-				MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-						"Info: starting Python console. "
-						);
-			}
-
-			List<string> spom;
-			FillDefectList();
-			// calculate Results
-			System.Threading.Tasks.Task Zadatak = new System.Threading.Tasks.Task(() =>
-			{
-				foreach (DefectResult res in LDLTSDataFile.LDLTSSpectrumFile.Peak.DefectsResults)
-				{
-					int count = res.Temperatures.Count;
-
-					if (count < 3)
-					{
-						MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-						  "Info: OLS - Less than 3 points for defect (" + res.DefectName + ")"
-						  );
-						continue;
-					}
-
-					double[] X = new double[count];
-					double[] Y = new double[count];
-
-					for (int i = 0; i < count; i++)
-					{
-						X[i] = (double)((1.0M / 8.61733E-5M) / res.Temperatures[i]);
-						Y[i] = (Math.Log((double)(res.Emissions[i] / (res.Temperatures[i] * res.Temperatures[i]))));
-					}
-
-					spom = new List<string>();
-					spom.Add(console.runOLS);
-
-
-					string s = X[0].ToString("E10", CultureInfo.InvariantCulture);
-					for (int i = 1; i < count; i++)
-					{
-						s = s + "|" + X[i].ToString("E10", CultureInfo.InvariantCulture);
-					}
-					spom.Add(s);
-					s = Y[0].ToString("E10", CultureInfo.InvariantCulture);
-					for (int i = 1; i < count; i++)
-					{
-						s = s + "|" + Y[i].ToString("E10", CultureInfo.InvariantCulture);
-					}
-					spom.Add(s);
-					console.WriteLines(spom);
-					spom = console.ReadLines(2);
-
-
-					if (spom == null) return;
-
-					string[] stringList = spom[0].Split('|');
-					decimal value;
-
-
-					if (!decimal.TryParse(stringList[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out value))
-					{
-						MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-						"Error : Energy is not number. " + stringList[1]
-						);
-						return;
-					}
-					res.Energy = -value;
-
-					if (!decimal.TryParse(stringList[0], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out value))
-					{
-						MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-						"Error : cross section is not number. " + stringList[0]
-						);
-						return;
-					}
-					res.B = value;
-
-					stringList = spom[1].Split('|');
-					if (!decimal.TryParse(stringList[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out value))
-					{
-						MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-						"Error : Energy standard deviation is not number. " + stringList[1]
-						);
-						return;
-					}
-					res.EnergyDeviation = value;
-					if (!decimal.TryParse(stringList[0], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out value))
-					{
-						MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-						"Error : cross section standard deviation is not number. " + stringList[0]
-						);
-						return;
-					}
-
-					try
-					{
-						res.BDeviation = value;
-						res.CrossSection = (Math.Exp((double)res.B) / 3.625E21);
-						res.CrossSectionDeviation = res.CrossSection * (double)res.BDeviation;
-
-					}
-					catch (Exception exce)
-					{
-						MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-							"Error : Cross section is to large for double or decimal type. "
-							);
-					}
-
-				}
-				LDLTSPageInstance.DefectsResultsListbox.Dispatcher.BeginInvoke(new voidDelegate(UpdateDefectsResultsListBox));
-			});
-			Zadatak.Start();
-		}
-
-		public void onExit()
-		{
-			console.WriteLines(new List<string>() { "Exit" });
-			console.KillPythonConsole();
-		}
-
+         
 		private void FillDefectList()
 		{
 			ObservableCollection<DefectResult> defres = new ObservableCollection<DefectResult>();
@@ -1359,8 +1221,7 @@ namespace Results
 					defres[index].Temperatures.Add(item.Temperature);
 					defres[index].Emissions.Add(peak.EmRate);
 					defres[index].EmissionsDevioations.Add(peak.EmRateError);
-					defres[index].Amplitudes.Add(peak.Amplitude);
-					UpdateCorrectedAmplitudes_Click(new object(), new RoutedEventArgs());
+					defres[index].Amplitudes.Add(peak.Amplitude); 
 					defres[index].AmplitudesCorrected.Add(peak.AmplitudeCorrected);
 					defres[index].AmplitudesDeviations.Add(peak.AmplitudeError);
 					defres[index].Broadenings.Add(peak.Broadening);
@@ -1432,77 +1293,7 @@ namespace Results
 		}
 
 		private delegate void voidDelegate();
-
-		private void UpdateDefectsResultsListBox()
-		{
-			DefectsResultsListbox.Items.Clear();
-			foreach (DefectResult res in LDLTSDataFile.LDLTSSpectrumFile.Peak.DefectsResults)
-			{
-				DefectsResultsListbox.Items.Add(res);
-			}
-			DefectsResultsListbox.Items.Refresh();
-		}
-
-		private void Save_Click(object sender, RoutedEventArgs e)
-		{
-			if (DefectsResultsListbox.SelectedItems.Equals(null) || DefectsResultsListbox.SelectedItems.Count < 1)
-			{
-				MainWindow.ThisWindowInstance.Status.Dispatcher.BeginInvoke(new MainWindow.SetStatusTextDelegate(MainWindow.ThisWindowInstance.SetStatusText),
-					"Info : Select wich results should be saved. "
-					);
-				return;
-			}
-			
-
-			SaveFileDialog saveFileDialog = new SaveFileDialog()
-			{
-				Filter = "Text Files(*.txt)|*.txt|All(*.*)|*"
-			};
-
-			if (saveFileDialog.ShowDialog() == true)
-			{
-				string directory = Path.GetDirectoryName(saveFileDialog.FileName);
-				string name = Path.GetFileNameWithoutExtension(saveFileDialog.FileName);
-
-				using (StreamWriter writer = new StreamWriter(Path.Combine(directory, name + "_DefectsResults.txt")))
-				{
-					foreach (DefectResult def in LDLTSDataFile.LDLTSSpectrumFile.Peak.DefectsResults)
-					{
-						writer.WriteLine("Name: " + def.DefectName);
-						writer.WriteLine(string.Format("Energy (eV): {0:N} ± {1:N}", def.Energy, def.EnergyDeviation));
-						writer.WriteLine(string.Format("B (eV/K^2): {0:0.##E+00} ± {1:0.##E+00}", def.B, def.BDeviation));
-						writer.WriteLine(string.Format("Cross section (cm^2): {0:0.##E+00}", def.CrossSection));
-						writer.WriteLine();
-					}
-				}
-
-				//foreach (DefectResult def in LDLTSDataFile.LDLTSSpectrumFile.Peak.DefectsResults)
-				//{
-				//    using (StreamWriter writer = new StreamWriter(Path.Combine(directory, name + "_" + def.DefectName + ".txt")))
-				//    {
-				//        writer.WriteLine(string.Format("{0,15} {1,15} {2,16} {3,23} {4,24} {5,15}",
-				//                         "Temperature(K)",
-				//                         "Emission(eV)",
-				//                         "StandardDeviation(eV)",
-				//                         "△CAmplitude(pF)",
-				//                         "△CStandandDeviation(pF)",
-				//                         "Broadening"));
-				//        for (int i = 0; i < def.Emissions.Count; i++)
-				//        {
-				//            writer.WriteLine(string.Format("{0,15} {1,15} {2,16} {3,23} {4,24} {5,15}",
-				//                         def.Temperatures[i].ToString("N", CultureInfo.InvariantCulture).PadLeft(15, ' '),
-				//                         def.Emissions[i].ToString("E", CultureInfo.InvariantCulture).PadLeft(15, ' '),
-				//                         def.EmissionsDevioations[i].ToString("E", CultureInfo.InvariantCulture).PadLeft(16, ' '),
-				//                         def.Amplitudes[i].ToString("E", CultureInfo.InvariantCulture).PadLeft(23, ' '),
-				//                         def.AmplitudesDeviations[i].ToString("E", CultureInfo.InvariantCulture).PadLeft(24, ' '),
-				//                         def.Broadenings[i].ToString("E", CultureInfo.InvariantCulture).PadLeft(15, ' ')
-				//                         ));
-				//        }
-				//    }
-				//} 
-			}
-		}
-
+         
 		private void AddHeaderButton_Click(object sender, RoutedEventArgs e)
 		{
 			List<string> a = new List<string>();
@@ -1706,8 +1497,7 @@ namespace Results
 
 		private void SortLDLTSFiles_Click(object sender, RoutedEventArgs e)
 		{
-			LDLTSFilePopupButton.ContextMenu.IsOpen = false;
-		//	LDLTSFilePopupButton_Click(new object(), new RoutedEventArgs());
+			LDLTSFilePopupButton.ContextMenu.IsOpen = false; 
 
 			for (int i = 0; i < LDLTSDataFiles.Count; i++)
 				for (int j = i + 1; j < LDLTSDataFiles.Count; j++)
@@ -2074,8 +1864,7 @@ namespace Results
 		}
 
 		private void ReloadDataButton_Click(object sender, RoutedEventArgs e)
-		{
-			//LDLTSFilePopupButton_Click(new object(), new RoutedEventArgs());
+		{ 
 			foreach (LDLTSDataFile File in LDLTSDataFilesListBox.SelectedItems)
 			{
 				string Name = File.FileName;
@@ -2252,8 +2041,7 @@ namespace Results
 	}
 
 		private void AddHeader_Click(object sender, RoutedEventArgs e)
-		{
-			//LDLTSFilePopupButton_Click(new object(), new RoutedEventArgs());
+		{ 
 			MenuItem m = (MenuItem)e.Source;
 			MenuItem mp = (MenuItem)m.Parent;
 			string key = (string)m.Header;
@@ -2278,29 +2066,13 @@ namespace Results
 			}
 		}
 		private void RemoveHeader_Click(object sender, RoutedEventArgs e)
-		{
-		//	LDLTSFilePopupButton_Click(new object(), new RoutedEventArgs());
+		{ 
 				int i = int.Parse(((MenuItem)e.Source).Name.Substring(1));
 				LDLTSDataFile.VisibleHeadersKey.RemoveAt(i);
 				LDLTSDataFile.VisibleHeadersParameter.RemoveAt(i);
 			UpdateVisibleLDLTSFilesHeaders();
 		}
-		
 		 
-		private void UpdateCorrectedAmplitudes_Click(object sender, RoutedEventArgs e)
-		{
-			foreach (LDLTSDataFile s in LDLTSDataFiles)
-			{
-				foreach (LDLTSDataFile.LDLTSSpectrumFile sf in s.LDLTSSpectrumFiles)
-				{
-					foreach (LDLTSDataFile.LDLTSSpectrumFile.Peak peak in sf.Peaks)
-					{
-						peak.AmplitudeCorrected = (double)peak.Amplitude * Math.Exp((double)(peak.EmRate * (1M / s.SampleRate) * s.NumberOfCroppedPoints));
-					}
-				}
-			}
-		}
-
 		private void AcceptHeaderChanges_Click(object sender, RoutedEventArgs e)
 		{ 
 			foreach (LDLTSDataFile file in LDLTSDataFilesListBox.SelectedItems)
@@ -2330,44 +2102,7 @@ namespace Results
 		{
 			LDLTSFilePopupButton_Click(new object(), new RoutedEventArgs());
 		}
-
-		private void LoadOtherFilesTemperatures_Click(object sender, RoutedEventArgs e)
-		{
-			string extension = LoadTemperaturesFromOtherFilesExtensionTextBox.Text;
-
-			foreach (LDLTSDataFile file in LDLTSDataFilesListBox.SelectedItems)
-			{
-				string directory = Path.GetDirectoryName(file.FileName);
-				string name = file.FileNameShort;
-				string type = Path.GetExtension(file.FileName);
-				if (name.Contains(extension) == false) continue;
-				string name2 = name.Substring(0,name.LastIndexOf(extension));
-				string file2 = Path.Combine(directory, name2 + type);
-				if (File.Exists(file2) == false) continue;
-				using (StreamReader reader = new StreamReader(file2))
-				{
-					List<string> a = new List<string>();
-					while (reader.EndOfStream == false)
-					{
-						a.Add(reader.ReadLine());
-					}
-
-					List<string> b = lform.getProperties(lform.ldltsisofile.parameters, ref a);
-					string temp = lform.getValue("temperature", ref b);
-					if (temp != "")
-					{
-						try
-						{
-							file.Temperature = decimal.Parse(temp, CultureInfo.InvariantCulture);
-						}
-						catch { }
-						file.Properties[4][0] = temp; 
-					}
-				}
-			}
-			LDLTSDataFilesListBox.Items.Refresh();
-		}
-
+         
 		private void TemperatureLabelsToggleButton_Click(object sender, RoutedEventArgs e)
 		{
 			if (TemperatureLabelsToggleButton.IsChecked == true)

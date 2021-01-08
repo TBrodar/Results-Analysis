@@ -24,27 +24,7 @@
             <WrapPanel Grid.Row="0" Grid.Column="0"  Orientation="Horizontal" HorizontalAlignment="Left" Height="Auto">
                 <ComboBox Name="DLTSPlotOption" Width="150"  SelectedIndex="0" SelectionChanged="DLTSPlotOption_SelectionChanged" >
                     <ComboBoxItem Content="Plot all selected" />
-                </ComboBox>
-             <!--   <ComboBox Name="SplitOptionComboBox" Width="150" SelectedIndex="0" SelectionChanged="SplitOptionComboBox_SelectionChanged">
-                    <ComboBoxItem Content="Split Verticaly" />
-                    <ComboBoxItem Content="As measured" />
-                    <ComboBoxItem >
-                        <ComboBoxItem.Content>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Label Content="Split by offset " Grid.Column="0" />
-                                
-                            </Grid>
-                        </ComboBoxItem.Content>
-                    </ComboBoxItem>
-                </ComboBox> -->
+                </ComboBox> 
                 <Button Content="Refresh" Name="RefreshGraph" Click="RefreshGraph_Click"  MinWidth="100"/>
                 <ToggleButton Name="DataToolTipToggleButton" IsChecked="True" MinWidth="100" Content="Data tool tip" Click="DataToolTipToggleButton_Click" />
                 <ToggleButton Name="EmissionsLabelsToggleButton" IsChecked="True" MinWidth="100" Content="Show emissions" Click="EmissionsLabelsToggleButton_Click" />
@@ -97,10 +77,8 @@
                     <Button Content="Remove" Name="RemoveButton" Grid.Column="1" Grid.Row="0" Margin="2,2,2,2" Click="Remove_Click" />
                     <Button Name="DLTSFilePopupButton"  Content="Show more" Grid.Column="2" Margin="2,2,2,2" Grid.Row="0" Click="DLTSFilePopupButton_Click" >
                         <Button.ContextMenu>
-                            <ContextMenu Name="DLTSFileContextMenu" Closed="DLTSFileContextMenu_Closed">
-                                <!--<MenuItem Name="ReloadDataMenuItem" Header="Reload selected data files" Click="ReloadDataButton_Click" -->
-                                <MenuItem Name="SortDLTSFilesMenuItem" Header="Sort" Click="SortDLTSFiles_Click" />
-                                <!--<MenuItem Name="UpdateCorrectedAmplitudes" Header="Update all CorrectedAmplitudes" Click="UpdateCorrectedAmplitudes_Click" />-->
+                            <ContextMenu Name="DLTSFileContextMenu" Closed="DLTSFileContextMenu_Closed"> 
+                                <MenuItem Name="SortDLTSFilesMenuItem" Header="Sort" Click="SortDLTSFiles_Click" /> 
 
                                 <Separator />
                                 <MenuItem Name="AddHeader" Header="Show parameter" >
@@ -109,27 +87,7 @@
                                 <MenuItem Name="RemoveHeader" Header="Hide parameter" >
 
                                 </MenuItem>
-                                <MenuItem Name="AcceptHeaderChanges" Header="Accept change of selected parameters" Click="AcceptHeaderChanges_Click" />
-                                <Separator />
-                                <!--<MenuItem Header="Other" >
-                                    <MenuItem Name="LoadOtherFilesTemperatures"  Click="LoadOtherFilesTemperatures_Click" >
-                                        <MenuItem.Header>
-                                            <Grid >
-
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto" />
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
-                                                <Label Padding="0" Grid.Column="0" Grid.Row="0" Content="Load temperature from other files without extension " />
-                                                <TextBox Grid.Column="1" Grid.Row="0" MinWidth="50" Text="" Name="LoadTemperaturesFromOtherFilesExtensionTextBox" />
-                                            </Grid>
-                                        </MenuItem.Header>
-                                    </MenuItem>
-                                    <MenuItem Header="Remove set name from display name (in name format Sample_SetName_OtherLabels)"  />
-                                </MenuItem>-->
+                                <MenuItem Name="AcceptHeaderChanges" Header="Accept change of selected parameters" Click="AcceptHeaderChanges_Click" /> 
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>
@@ -206,14 +164,7 @@
                                         <Label Grid.Column="0" Grid.Row="0" Background="{Binding Color}" Content="{Binding Path=Amplitude}" Grid.ColumnSpan="2" ContentStringFormat="ΔC [pF]={0:0.##E+00} " Padding="3,3,0,3" Margin="0,0,0,0" />
                                     </Grid>
                                     <Label Grid.Row="1" Grid.Column="0"  Background="{Binding Color}" Content="{Binding Path=Temperature}" ContentStringFormat="Temperature [K]: {0:0.##E+00}" Padding="3,3,3,3" Margin="0,0,0,0" />
-                                    <!--<Grid Grid.Column="1" Grid.Row="0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <ComboBox Grid.Column="0" IsEditable="True" Foreground="{Binding ColorName}" Name="DefectNamesComboBox" Text="{Binding DefectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Path=Defects, Mode=TwoWay, NotifyOnSourceUpdated=True}"  IsTextSearchEnabled="True" />
-                                        <Button  Grid.Column="1" Content=" + "  Name="AddDefect" />
-                                    </Grid>-->
+                                   
 
                                 </Grid>
                             </DataTemplate>
@@ -225,8 +176,7 @@
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <!--<RowDefinition Height="Auto" />-->
+                                        <RowDefinition Height="Auto" /> 
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -249,15 +199,7 @@
                                         <Label Grid.Column="0" Grid.Row="0" Background="{Binding Color}" Content="{Binding Path=Amplitude}" Grid.ColumnSpan="2" ContentStringFormat="ΔC [pF]={0:0.##E+00} " Padding="3,3,0,3" Margin="0,0,0,0" />
                                     </Grid>
                                     <Label Grid.Row="1" Grid.Column="0"  Background="{Binding Color}" Content="{Binding Path=Temperature}" ContentStringFormat="Temperature [K]: {0:0.##E+00}" Padding="3,3,3,3" Margin="0,0,0,0" />
-                                    <!--<Grid Grid.Column="1" Grid.Row="0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <ComboBox Grid.Column="0" IsEditable="True" Foreground="{Binding ColorName}" Name="DefectNamesComboBox" Text="{Binding DefectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Path=Defects, Mode=TwoWay, NotifyOnSourceUpdated=True}"  IsTextSearchEnabled="True" />
-                                        <Button  Grid.Column="1" Content=" + "  Name="AddDefect" />
-                                    </Grid>-->
-
+                                    
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
