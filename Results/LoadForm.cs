@@ -232,17 +232,12 @@ namespace Results
 				{
 					List<string> pom = new List<string>();
 					pom.Add("Temperature(K)");
-					pom.Add("Emission(eV)");
-					//pom.Add("EmissionStandardDeviation(eV)");
-					pom.Add("△CAmplitude(pF)");
-					//pom.Add("△CStandandDeviation(pF)");
-					//pom.Add("Broadening");
-					//pom.Add("NumericalMethod");
+					pom.Add("Emission(eV)"); 
+					pom.Add("△CAmplitude(pF)"); 
 					pom.Add("△CAmplitudePointsCutCorrected(pF)");
 					pom.Add("FileName");
 					pom.Add("FilePath");
-					pom.Add("DefectName");
-					//pom.Add("PointsCut");
+					pom.Add("DefectName"); 
 
 					AllKeys.Add(pom);
 					AllKeys.Add(generalkeys.GeneralKeysList);
@@ -310,20 +305,7 @@ namespace Results
 
 					ParametersKeysList.Add(gain);
 					ParametersKeysList.Add(BiasCapacitance);
-
-					//ParametersKeysList.Add(bias);
-					//ParametersKeysList.Add(FirstPulseBias);
-					//ParametersKeysList.Add(SecondPulseBias);
-					//ParametersKeysList.Add(InjectionPulseBias);
-					//ParametersKeysList.Add(FirstPulseWidth);
-					//ParametersKeysList.Add(SecondPulseWidth);
-					//ParametersKeysList.Add(InjectionPulseWidth);
-					//ParametersKeysList.Add(Secondpulse);
-					//ParametersKeysList.Add(Secondpulseinterlacing);
-					//ParametersKeysList.Add(Injectionpulse);
-					//ParametersKeysList.Add(LikePulse1);
-
-					//ParametersKeysList.Add(CurrentTransient);
+                     
 					ParametersKeysList.Add(magneticfield);
 					ParametersKeysList.Add(pressure);
 					ParametersKeysList.Add(illumination);
@@ -334,19 +316,7 @@ namespace Results
 				public string temperatureramp = "temperature ramp";
 				public string ratewindowmultiplier = "rate window multiplier";
 				public string capacitancemeterrange = "capacitance meter range";
-
-				//public string bias = "bias";
-				//public string FirstPulseBias = "1st Pulse Bias";
-				//public string SecondPulseBias = "2nd Pulse Bias";
-				//public string InjectionPulseBias = "Injection Pulse Bias";
-				//public string FirstPulseWidth = "1st Pulse Width";
-				//public string SecondPulseWidth = "2nd Pulse Width";
-				//public string InjectionPulseWidth = "Injection Pulse Width";
-				//public string Secondpulse = "2nd pulse";
-				//public string Secondpulseinterlacing = "2nd pulse interlacing";
-				//public string Injectionpulse = "Injection pulse";
-				//public string LikePulse1 = "Like Pulse1";
-
+                 
 				public string gain = "gain";
 				public string BiasCapacitance = "Bias Capacitance";
 				//public string CurrentTransient = "CurrentTransient";

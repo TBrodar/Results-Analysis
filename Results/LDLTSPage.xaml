@@ -112,7 +112,7 @@
                             <ContextMenu Name="LDLTSFileContextMenu" Closed="LDLTSFileContextMenu_Closed">
                                 <MenuItem Name="SortLDLTSFilesMenuItem" Header="Sort" Click="SortLDLTSFiles_Click" />
                                 <MenuItem Name="ReloadDataMenuItem" Header="Reload selected data files" Click="ReloadDataButton_Click" />
-                                <MenuItem Name="UpdateCorrectedAmplitudes" Header="Update all CorrectedAmplitudes" Click="UpdateCorrectedAmplitudes_Click" />
+                                <!--<MenuItem Name="UpdateCorrectedAmplitudes" Header="Update all CorrectedAmplitudes" Click="UpdateCorrectedAmplitudes_Click" /> -->
                                 
                                 <Separator />
                                 <MenuItem Name="AddHeader" Header="Show parameter" >
@@ -122,7 +122,9 @@
                                     
                                 </MenuItem>
                                 <MenuItem Name="AcceptHeaderChanges" Header="Accept change of selected parameters" Click="AcceptHeaderChanges_Click" />
-                                <Separator />
+                                
+                                <!-- <Separator />
+                                
                                 <MenuItem Header="Other" >
                                     <MenuItem Name="LoadOtherFilesTemperatures"  Click="LoadOtherFilesTemperatures_Click" >
                                         <MenuItem.Header>
@@ -141,7 +143,7 @@
                                         </MenuItem.Header>
                                     </MenuItem>
                                     <MenuItem Header="Remove set name from display name (in name format Sample_SetName_OtherLabels)" Click="MenuItem_Click" />
-                                </MenuItem>
+                                </MenuItem> -->
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>
@@ -282,7 +284,7 @@
                     </ListBox>
                 </Grid>
             </TabItem>
-            <TabItem Header="E,σ results" >
+          <!--  <TabItem Header="E,σ results" >
                 <Grid Margin="5,5,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -315,7 +317,7 @@
                                     </WrapPanel>
                                     <WrapPanel Grid.Column="0" Grid.Row="2">
                                         <Label Name="CrossSection" Content="{Binding CrossSection}" ContentStringFormat="σ = {0:0.##E+00} cm^2" Padding="4,4,4,4" Margin="0,0,0,0"/>
-                               <!--         <Label Name="CrossSectionDeviation" Content="{Binding CrossSectionDeviation}" ContentStringFormat="{}}{0:0.##E+00} cm^2" Padding="0,4,4,4" Margin="0,0,0,0" /> -->
+                                        <Label Name="CrossSectionDeviation" Content="{Binding CrossSectionDeviation}" ContentStringFormat="{}}{0:0.##E+00} cm^2" Padding="0,4,4,4" Margin="0,0,0,0" /> 
                                     </WrapPanel>
 
                                 </Grid>
@@ -324,8 +326,8 @@
                     </ListBox>
                     <Button Content="Save"  Grid.Column="2" Grid.Row="0" Margin="2,2,2,2" Click="Save_Click"/>
                 </Grid>
-            </TabItem>
-            <TabItem Header="Save data">
+    </TabItem> -->
+    <TabItem Header="Save data">
                 <Grid  Margin="5,5,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />

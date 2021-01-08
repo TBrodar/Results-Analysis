@@ -16,6 +16,7 @@ namespace Results
         public List<string> CVFileNames { get; set; }
         public List<string> CVFileNamesShort { get; set; }
         public List<CVDataFileClass> FilesData { get; set; }
+        public List<int> OpenDialogBoxFilterIndex { get; set; }
 
     }
 
