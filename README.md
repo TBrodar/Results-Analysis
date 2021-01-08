@@ -1,4 +1,4 @@
-![Screen shot](https://github.com/TBrodar/Results-Analysis/blob/ForkedResults/ResultsAnalysis.png)
+![Screen shot](https://github.com/TBrodar/Results-Analysis/blob/master/ResultsAnalysis.png)
 
 Results Analysis software can be used to select peaks in DLTS/Laplace DLTS spectra, select measurement parameters,
 and create .txt file with table of all parameters necessary for further analysis.  
